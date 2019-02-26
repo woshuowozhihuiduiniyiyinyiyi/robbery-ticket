@@ -1,0 +1,54 @@
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  typeAliasesPackage: com.hj.tj.gohome.entity
+
+auth:
+  jwt:
+    secret: p1BlCbbhyVpXptA3YBEWdjdJ592rclZP
+    expire: 3600
+
+
+#默认使用配置
+spring:
+  profiles:
+    active: test
+
+server:
+  servlet:
+    context-path: /gohome
+
+---
+#开发配置
+spring:
+  profiles: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/gohome?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 821075358q
+server:
+  port: 8081
+
+---
+#测试配置
+spring:
+  profiles: test
+
+  datasource:
+    url: jdbc:mysql://cdb-96qh7ip0.cd.tencentcdb.com:10022/gohome_test?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: huijia931
+server:
+  port: 8081
+
+---
+#线上配置
+spring:
+  profiles: prod
+
+  datasource:
+    url: jdbc:mysql://cdb-96qh7ip0.cd.tencentcdb.com:10022/gohome?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: huijia931
+server:
+  port: 8080

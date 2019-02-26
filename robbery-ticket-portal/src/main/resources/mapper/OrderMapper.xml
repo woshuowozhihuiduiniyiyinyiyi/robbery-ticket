@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hj.tj.gohome.mapper.OrderMapper">
+    <!-- 根据状态列表查询总收益 -->
+    <select id="getTotalProfit" parameterType="java.util.List" resultType="java.lang.Integer" >
+        select sum(profit) from `order`
+        where status in
+        <foreach collection="list" item="status" index="index"
+                 open="(" close=")" separator=",">
+            #{status}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,69 @@
+#微信相关配置
+wx:
+  miniapp:
+    appid: wx379d5951147e403e
+    secret: 4f18f8ba07de2542a08b3452f576aa44
+    token: e6170e0539b8bd0e429f4dc5d8fc5eff
+    aesKey: Dx5LcP76CvL0JOE5jmqjNExAV2uAYIwhgbpv390itN7
+    msgDataFormat: JSON
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  typeAliasesPackage: com.hj.tj.gohome.entity
+
+auth:
+  jwt:
+    secret: ed92792d87d629d84cf589c5acfe257f
+    expire: 2592000
+    header: 22f4830ec0a499683c117136444bb6b6
+
+
+#默认使用配置
+spring:
+  profiles:
+    active: test
+
+server:
+  servlet:
+    context-path: /gohomeapp
+  port: 443
+  ssl:
+    key-store: classpath:1614217_www.home931.top.pfx
+    key-store-password: 0r8jLO79
+    key-store-type: PKCS12
+
+---
+#开发配置
+spring:
+  profiles: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/gohome?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 821075358q
+server:
+  port: 8091
+
+---
+#测试配置
+spring:
+  profiles: test
+
+  datasource:
+    url: jdbc:mysql://cdb-96qh7ip0.cd.tencentcdb.com:10022/gohome_test?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: huijia931
+server:
+  port: 8091
+
+---
+#线上配置
+spring:
+  profiles: prod
+
+  datasource:
+    url: jdbc:mysql://cdb-96qh7ip0.cd.tencentcdb.com:10022/gohome?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: huijia931
+server:
+  port: 8081
