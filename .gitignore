@@ -1,0 +1,6 @@
+# IntelliJ project files
+.idea
+*.iml
+target
+src/frontend/node_modules
+src/main/resources/static
