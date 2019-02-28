@@ -7,6 +7,7 @@ import com.hj.tj.gohome.vo.station.StationTicketResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * @author tangj
- * @description
  * @since 2019/2/28 11:07
  */
 @Service
@@ -40,37 +41,27 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public List<StationInfoResObj> listStationInfo(StationInfoReqObj stationInfoReqObj) {
-        StringBuffer urlStrBuffer = new StringBuffer(URL_STR);
+        StringBuilder urlStrBuffer = new StringBuilder(URL_STR);
         urlStrBuffer.append(TRAIN_DATE).append(stationInfoReqObj.getTrainDate())
                 .append("&").append(FROM_STATION).append(stationInfoReqObj.getFromStation())
                 .append("&").append(TO_STATION).append(stationInfoReqObj.getToStation())
                 .append("&").append(PURPOSE_CODE);
 
         HttpsURLConnection connection = null;
-        InputStream inputStream = null;
-        BufferedReader bufferedReader = null;
-
-        log.info("url:{}", urlStrBuffer.toString());
-
         try {
             URL url = new URL(urlStrBuffer.toString());
             connection = (HttpsURLConnection) url.openConnection();
             connection.setConnectTimeout(DEFAULT_TIME_OUT);
             connection.setRequestProperty("Cookie", COOKIE);
 
-            inputStream = connection.getInputStream();
-
             if (HttpStatus.OK.value() != connection.getResponseCode()) {
                 log.error("connection 12306 error.status:{}", connection.getResponseCode());
                 return new ArrayList<>();
             }
 
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");
-            bufferedReader = new BufferedReader(inputStreamReader);
-
-            String str;
+            List<String> strs = IOUtils.readLines(connection.getInputStream(), "UTF-8");
             StringBuilder stringBuilder = new StringBuilder();
-            while ((str = bufferedReader.readLine()) != null) {
+            for (String str : strs) {
                 stringBuilder.append(str);
             }
 
@@ -78,82 +69,70 @@ public class StationServiceImpl implements StationService {
             JSONObject jsonObject = JSONObject.fromObject(stringBuilder.toString());
             StationTicketResponse stationTicketResponse = (StationTicketResponse) JSONObject.toBean(jsonObject, StationTicketResponse.class);
 
-            List<StationInfoResObj> stationInfoResObjs = new ArrayList<>();
-
-            List<String> responseList = stationTicketResponse.getData().getResult();
-            for (String station : responseList) {
-                StationInfoResObj stationInfoResObj = new StationInfoResObj();
-
-                String[] splitResult = station.split("\\|");
-
-                stationInfoResObj.setTrainNumber(splitResult[3]);
-                stationInfoResObj.setBeginCity(splitResult[4]);
-                stationInfoResObj.setEndCity(splitResult[5]);
-                stationInfoResObj.setFromCity(splitResult[6]);
-                stationInfoResObj.setToCity(splitResult[7]);
-                stationInfoResObj.setFromTime(splitResult[8]);
-                stationInfoResObj.setToTime(splitResult[9]);
-                stationInfoResObj.setUsedTime(splitResult[10]);
-                stationInfoResObj.setHasToday(splitResult[11]);
-
-                List<String> ticketInfo = new ArrayList<>();
-                // 高级软卧
-                ticketInfo.add(splitResult[21]);
-                // 软卧/一等卧
-                ticketInfo.add(splitResult[23]);
-                // 软座
-                ticketInfo.add(splitResult[24]);
-                // 无座
-                ticketInfo.add(splitResult[26]);
-                // 硬卧/二等卧
-                ticketInfo.add(splitResult[28]);
-                // 硬座
-                ticketInfo.add(splitResult[29]);
-                // 二等座
-                ticketInfo.add(splitResult[30]);
-                // 一等座
-                ticketInfo.add(splitResult[31]);
-                // 商务座/特等座
-                ticketInfo.add(splitResult[32]);
-                // 动卧
-                ticketInfo.add(splitResult[33]);
-
-                stationInfoResObj.setTicketInfo(ticketInfo);
-
-                stationInfoResObjs.add(stationInfoResObj);
-            }
+            List<StationInfoResObj> stationInfoResObjs = convertStationInfoResObjs(stationTicketResponse);
 
             return stationInfoResObjs;
-
         } catch (MalformedURLException e) {
             log.error("url is error.error stack:{}", e);
-            return new ArrayList<>();
         } catch (IOException e) {
             log.error("open 12306 connection error.error stack:{}", e);
-            return new ArrayList<>();
         } catch (JSONException e) {
             log.error("parse json error.e:{}", e);
-            return new ArrayList<>();
         } finally {
             if (Objects.nonNull(connection)) {
                 connection.disconnect();
             }
-
-            if (Objects.nonNull(bufferedReader)) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (Objects.nonNull(inputStream)) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+
+        return new ArrayList<>();
+    }
+
+    private List<StationInfoResObj> convertStationInfoResObjs(StationTicketResponse stationTicketResponse) {
+        List<StationInfoResObj> stationInfoResObjs = new ArrayList<>();
+
+        List<String> responseList = stationTicketResponse.getData().getResult();
+        for (String station : responseList) {
+            StationInfoResObj stationInfoResObj = new StationInfoResObj();
+
+            String[] splitResult = station.split("\\|");
+
+            stationInfoResObj.setTrainNumber(splitResult[3]);
+            stationInfoResObj.setBeginCity(splitResult[4]);
+            stationInfoResObj.setEndCity(splitResult[5]);
+            stationInfoResObj.setFromCity(splitResult[6]);
+            stationInfoResObj.setToCity(splitResult[7]);
+            stationInfoResObj.setFromTime(splitResult[8]);
+            stationInfoResObj.setToTime(splitResult[9]);
+            stationInfoResObj.setUsedTime(splitResult[10]);
+            stationInfoResObj.setHasToday(splitResult[11]);
+
+            List<String> ticketInfo = new ArrayList<>();
+            // 高级软卧
+            ticketInfo.add(splitResult[21]);
+            // 软卧/一等卧
+            ticketInfo.add(splitResult[23]);
+            // 软座
+            ticketInfo.add(splitResult[24]);
+            // 无座
+            ticketInfo.add(splitResult[26]);
+            // 硬卧/二等卧
+            ticketInfo.add(splitResult[28]);
+            // 硬座
+            ticketInfo.add(splitResult[29]);
+            // 二等座
+            ticketInfo.add(splitResult[30]);
+            // 一等座
+            ticketInfo.add(splitResult[31]);
+            // 商务座/特等座
+            ticketInfo.add(splitResult[32]);
+            // 动卧
+            ticketInfo.add(splitResult[33]);
+
+            stationInfoResObj.setTicketInfo(ticketInfo);
+
+            stationInfoResObjs.add(stationInfoResObj);
+        }
+
+        return stationInfoResObjs;
     }
 }
