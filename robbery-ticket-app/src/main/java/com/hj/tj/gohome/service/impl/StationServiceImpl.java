@@ -72,7 +72,6 @@ public class StationServiceImpl implements StationService {
                 stringBuilder.append(str);
             }
 
-            System.out.println(stringBuilder.toString());
             JSONObject jsonObject = JSONObject.fromObject(stringBuilder.toString());
             TrainTicketResponse stationTicketResponse = (TrainTicketResponse) JSONObject.toBean(jsonObject, TrainTicketResponse.class);
 
