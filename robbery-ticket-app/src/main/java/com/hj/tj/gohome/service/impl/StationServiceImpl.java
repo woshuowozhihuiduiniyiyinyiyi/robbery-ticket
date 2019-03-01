@@ -41,7 +41,7 @@ public class StationServiceImpl implements StationService {
     private static final String TO_STATION = "leftTicketDTO.to_station=";
     private static final String PURPOSE_CODE = "purpose_codes=ADULT";
     private static final String COOKIE = "JSESSIONID=F4959E9490AEAA21A6E4407A90207300; route=c5c62a339e7744272a54643b3be5bf64; BIGipServerotn=1106248202.24610.0000; RAIL_EXPIRATION=1551570870843; RAIL_DEVICEID=TxpmWIrCfAI4FaVD9HF5shm1mTneQXWEu1OJ_p2Y7T2cRU6XRS8PaLcg1KLxR3cJhOHMwHWUOBzHJNSGE8tmA-MJoRHd8wAu2mMLc4kx0xS-OLmzc7-YSxZ8Yoovq3pCAdekhg5gkrPRJrdBL5vba6rv01l96PdB;";
-    private static final Integer DEFAULT_TIME_OUT = 4000;
+    private static final Integer DEFAULT_TIME_OUT = 10000;
 
     @Resource
     private StationMapper stationMapper;
@@ -57,33 +57,41 @@ public class StationServiceImpl implements StationService {
         HttpsURLConnection connection = null;
         try {
             URL url = new URL(urlStrBuffer.toString());
-            connection = (HttpsURLConnection) url.openConnection();
-            connection.setConnectTimeout(DEFAULT_TIME_OUT);
-            connection.setRequestProperty("Cookie", COOKIE);
+            int count = 0;
+            while (count < 5) {
+                connection = (HttpsURLConnection) url.openConnection();
+                connection.setConnectTimeout(DEFAULT_TIME_OUT);
+                connection.setRequestProperty("Cookie", COOKIE);
 
-            if (HttpStatus.OK.value() != connection.getResponseCode()) {
-                log.error("connection 12306 error.status:{}", connection.getResponseCode());
-                return new ArrayList<>();
+                if (HttpStatus.OK.value() != connection.getResponseCode()) {
+                    log.error("connection 12306 error.status:{}", connection.getResponseCode());
+                    return new ArrayList<>();
+                }
+
+                List<String> strs = IOUtils.readLines(connection.getInputStream(), "UTF-8");
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String str : strs) {
+                    stringBuilder.append(str);
+                }
+
+                JSONObject jsonObject;
+                try {
+                    jsonObject = JSONObject.fromObject(stringBuilder.toString());
+                } catch (JSONException e) {
+                    count++;
+                    continue;
+                }
+
+                TrainTicketResponse stationTicketResponse = (TrainTicketResponse) JSONObject.toBean(jsonObject, TrainTicketResponse.class);
+
+                List<TrainInfoResObj> stationInfoResObjs = convertStationInfoResObjs(stationTicketResponse);
+
+                return stationInfoResObjs;
             }
-
-            List<String> strs = IOUtils.readLines(connection.getInputStream(), "UTF-8");
-            StringBuilder stringBuilder = new StringBuilder();
-            for (String str : strs) {
-                stringBuilder.append(str);
-            }
-
-            JSONObject jsonObject = JSONObject.fromObject(stringBuilder.toString());
-            TrainTicketResponse stationTicketResponse = (TrainTicketResponse) JSONObject.toBean(jsonObject, TrainTicketResponse.class);
-
-            List<TrainInfoResObj> stationInfoResObjs = convertStationInfoResObjs(stationTicketResponse);
-
-            return stationInfoResObjs;
         } catch (MalformedURLException e) {
             log.error("url is error.error stack:{}", e);
         } catch (IOException e) {
             log.error("open 12306 connection error.error stack:{}", e);
-        } catch (JSONException e) {
-            log.error("parse json error.e:{}", e);
         } finally {
             if (Objects.nonNull(connection)) {
                 connection.disconnect();
