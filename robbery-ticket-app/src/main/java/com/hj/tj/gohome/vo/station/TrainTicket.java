@@ -11,7 +11,7 @@ import java.util.Map;
  * @since 2019/2/27 17:37
  */
 @Data
-public class StationTicket {
+public class TrainTicket {
     private String flag;
 
     private Map<String, Object> map;

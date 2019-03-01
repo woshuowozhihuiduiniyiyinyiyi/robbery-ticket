@@ -48,6 +48,13 @@
             <version>${mybatis.plus.boot.starter.version}</version>
         </dependency>
 
+        <!-- 分页 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>${com.github.pagehelper.version}</version>
+        </dependency>
+
         <!-- 数据库链接 -->
         <dependency>
             <groupId>mysql</groupId>

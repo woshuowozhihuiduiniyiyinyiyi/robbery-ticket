@@ -1,7 +1,8 @@
 package com.hj.tj.gohome.service;
 
-import com.hj.tj.gohome.vo.station.StationInfoReqObj;
 import com.hj.tj.gohome.vo.station.StationInfoResObj;
+import com.hj.tj.gohome.vo.station.TrainInfoReqObj;
+import com.hj.tj.gohome.vo.station.TrainInfoResObj;
 
 import java.util.List;
 
@@ -18,5 +19,13 @@ public interface StationService {
      * @param stationInfoReqObj
      * @return
      */
-    List<StationInfoResObj> listStationInfo(StationInfoReqObj stationInfoReqObj);
+    List<TrainInfoResObj> listTrainInfo(TrainInfoReqObj stationInfoReqObj);
+
+    /**
+     * 根据车站名称模糊查询列车
+     *
+     * @param trainName
+     * @return
+     */
+    List<StationInfoResObj> listStationInfo(String trainName);
 }

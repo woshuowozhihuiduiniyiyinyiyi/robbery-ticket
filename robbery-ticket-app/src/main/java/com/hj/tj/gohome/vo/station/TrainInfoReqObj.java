@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  * @since 2019/2/28 10:42
  */
 @Data
-public class StationInfoReqObj {
+public class TrainInfoReqObj {
     /**
      * 列表出发日期
      */

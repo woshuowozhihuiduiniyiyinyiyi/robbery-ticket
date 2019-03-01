@@ -8,8 +8,8 @@ import lombok.Data;
  * @since 2019/2/27 17:37
  */
 @Data
-public class StationTicketResponse {
-    private StationTicket data;
+public class TrainTicketResponse {
+    private TrainTicket data;
 
     private Integer httpstatus;
 

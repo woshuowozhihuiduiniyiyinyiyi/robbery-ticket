@@ -1,24 +1,28 @@
 package com.hj.tj.gohome.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.hj.tj.gohome.entity.Station;
+import com.hj.tj.gohome.mapper.StationMapper;
 import com.hj.tj.gohome.service.StationService;
-import com.hj.tj.gohome.vo.station.StationInfoReqObj;
 import com.hj.tj.gohome.vo.station.StationInfoResObj;
-import com.hj.tj.gohome.vo.station.StationTicketResponse;
+import com.hj.tj.gohome.vo.station.TrainInfoReqObj;
+import com.hj.tj.gohome.vo.station.TrainInfoResObj;
+import com.hj.tj.gohome.vo.station.TrainTicketResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,8 +43,11 @@ public class StationServiceImpl implements StationService {
     private static final String COOKIE = "JSESSIONID=F4959E9490AEAA21A6E4407A90207300; route=c5c62a339e7744272a54643b3be5bf64; BIGipServerotn=1106248202.24610.0000; RAIL_EXPIRATION=1551570870843; RAIL_DEVICEID=TxpmWIrCfAI4FaVD9HF5shm1mTneQXWEu1OJ_p2Y7T2cRU6XRS8PaLcg1KLxR3cJhOHMwHWUOBzHJNSGE8tmA-MJoRHd8wAu2mMLc4kx0xS-OLmzc7-YSxZ8Yoovq3pCAdekhg5gkrPRJrdBL5vba6rv01l96PdB;";
     private static final Integer DEFAULT_TIME_OUT = 4000;
 
+    @Resource
+    private StationMapper stationMapper;
+
     @Override
-    public List<StationInfoResObj> listStationInfo(StationInfoReqObj stationInfoReqObj) {
+    public List<TrainInfoResObj> listTrainInfo(TrainInfoReqObj stationInfoReqObj) {
         StringBuilder urlStrBuffer = new StringBuilder(URL_STR);
         urlStrBuffer.append(TRAIN_DATE).append(stationInfoReqObj.getTrainDate())
                 .append("&").append(FROM_STATION).append(stationInfoReqObj.getFromStation())
@@ -67,9 +74,9 @@ public class StationServiceImpl implements StationService {
 
             System.out.println(stringBuilder.toString());
             JSONObject jsonObject = JSONObject.fromObject(stringBuilder.toString());
-            StationTicketResponse stationTicketResponse = (StationTicketResponse) JSONObject.toBean(jsonObject, StationTicketResponse.class);
+            TrainTicketResponse stationTicketResponse = (TrainTicketResponse) JSONObject.toBean(jsonObject, TrainTicketResponse.class);
 
-            List<StationInfoResObj> stationInfoResObjs = convertStationInfoResObjs(stationTicketResponse);
+            List<TrainInfoResObj> stationInfoResObjs = convertStationInfoResObjs(stationTicketResponse);
 
             return stationInfoResObjs;
         } catch (MalformedURLException e) {
@@ -87,12 +94,34 @@ public class StationServiceImpl implements StationService {
         return new ArrayList<>();
     }
 
-    private List<StationInfoResObj> convertStationInfoResObjs(StationTicketResponse stationTicketResponse) {
+    @Override
+    public List<StationInfoResObj> listStationInfo(String trainName) {
+        QueryWrapper<Station> stationQueryWrapper = new QueryWrapper<>();
+        stationQueryWrapper.likeRight("name", trainName);
+
+        PageHelper.startPage(1, 5);
+        List<Station> stations = stationMapper.selectList(stationQueryWrapper);
+
+        if (CollectionUtils.isEmpty(stations)) {
+            return new ArrayList<>();
+        }
+
         List<StationInfoResObj> stationInfoResObjs = new ArrayList<>();
+        for (Station station : stations) {
+            StationInfoResObj stationInfoResObj = new StationInfoResObj();
+            BeanUtils.copyProperties(station, stationInfoResObj);
+            stationInfoResObjs.add(stationInfoResObj);
+        }
+
+        return stationInfoResObjs;
+    }
+
+    private List<TrainInfoResObj> convertStationInfoResObjs(TrainTicketResponse stationTicketResponse) {
+        List<TrainInfoResObj> stationInfoResObjs = new ArrayList<>();
 
         List<String> responseList = stationTicketResponse.getData().getResult();
         for (String station : responseList) {
-            StationInfoResObj stationInfoResObj = new StationInfoResObj();
+            TrainInfoResObj stationInfoResObj = new TrainInfoResObj();
 
             String[] splitResult = station.split("\\|");
 

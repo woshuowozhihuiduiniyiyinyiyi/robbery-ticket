@@ -2,63 +2,26 @@ package com.hj.tj.gohome.vo.station;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author tangj
  * @description
- * @since 2019/2/28 9:46
+ * @since 2019/3/1 9:37
  */
 @Data
 public class StationInfoResObj {
 
     /**
-     * 开车时间
+     * id
      */
-    private String fromTime;
+    private Integer id;
 
     /**
-     * 到达时间
+     * 车站名称，如：北京
      */
-    private String toTime;
+    private String name;
 
     /**
-     * 历经时长
+     * 车站编码，用于查询
      */
-    private String usedTime;
-
-    /**
-     * 是否当日到达
-     */
-    private String hasToday;
-
-    /**
-     * 出发站
-     */
-    private String fromCity;
-
-    /**
-     * 到达站
-     */
-    private String toCity;
-
-    /**
-     * 起始站
-     */
-    private String beginCity;
-
-    /**
-     * 终点站
-     */
-    private String endCity;
-
-    /**
-     * 车次
-     */
-    private String trainNumber;
-
-    /**
-     * 余票信息
-     */
-    private List<String> ticketInfo;
+    private String number;
 }
