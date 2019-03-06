@@ -24,6 +24,7 @@ public enum ServiceExceptionEnum {
     ORDER_REPEAT(HttpStatus.FORBIDDEN, "请勿在30秒内提交相同订单"),
     ORDER_TIME_LIMIT(HttpStatus.FORBIDDEN, "订单已提交，请勿10秒内重新下单"),
 
+    TICKET_QUERY_ERROR(HttpStatus.FORBIDDEN, "余票信息查询失败,请重新查询"),
     ;
 
     /**

@@ -2,6 +2,8 @@ package com.hj.tj.gohome.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
+import com.hj.tj.gohome.config.handler.ServiceException;
+import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.entity.Station;
 import com.hj.tj.gohome.mapper.StationMapper;
 import com.hj.tj.gohome.service.StationService;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.jni.Time;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -70,6 +73,7 @@ public class StationServiceImpl implements StationService {
             URL url = new URL(urlStrBuffer.toString());
             int count = 0;
             while (count < 10) {
+                log.info("12306 query:{}", count);
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.setConnectTimeout(DEFAULT_TIME_OUT);
                 connection.setRequestProperty("Cookie", COOKIE);
@@ -90,11 +94,14 @@ public class StationServiceImpl implements StationService {
                     jsonObject = JSONObject.fromObject(stringBuilder.toString());
                 } catch (JSONException e) {
                     count++;
+                    if (count >= 10) {
+                        log.info("12306 query 5 counts.finished.throw service exception.");
+                        throw new ServiceException(ServiceExceptionEnum.TICKET_QUERY_ERROR);
+                    }
                     continue;
                 }
 
                 TrainTicketResponse stationTicketResponse = (TrainTicketResponse) JSONObject.toBean(jsonObject, TrainTicketResponse.class);
-
                 List<TrainInfoResObj> stationInfoResObjs = convertStationInfoResObjs(stationTicketResponse);
 
                 return stationInfoResObjs;
@@ -138,6 +145,10 @@ public class StationServiceImpl implements StationService {
         List<TrainInfoResObj> stationInfoResObjs = new ArrayList<>();
 
         List<String> responseList = stationTicketResponse.getData().getResult();
+        if (CollectionUtils.isEmpty(responseList)) {
+            return stationInfoResObjs;
+        }
+
         for (String station : responseList) {
             TrainInfoResObj stationInfoResObj = new TrainInfoResObj();
 
@@ -180,7 +191,7 @@ public class StationServiceImpl implements StationService {
             stationInfoResObjs.add(stationInfoResObj);
         }
 
-        List<String> stationNumber = new ArrayList<>();
+        Set<String> stationNumber = new HashSet<>();
         for (TrainInfoResObj trainInfoResObj : stationInfoResObjs) {
             stationNumber.add(trainInfoResObj.getBeginCity());
             stationNumber.add(trainInfoResObj.getEndCity());
