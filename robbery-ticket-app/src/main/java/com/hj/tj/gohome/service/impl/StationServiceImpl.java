@@ -23,9 +23,8 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author tangj
@@ -48,17 +47,29 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public List<TrainInfoResObj> listTrainInfo(TrainInfoReqObj stationInfoReqObj) {
+        QueryWrapper<Station> queryWrapper = new QueryWrapper<>();
+        List<String> stationList = Arrays.asList(stationInfoReqObj.getFromStation(), stationInfoReqObj.getToStation());
+        queryWrapper.in("name", stationList);
+        List<Station> stations = stationMapper.selectList(queryWrapper);
+        if (Objects.isNull(stations) || stations.size() != 2) {
+            return new ArrayList<>();
+        }
+
+        Map<String, String> stationMap = stations.stream().collect(Collectors.toMap(Station::getName, Station::getNumber));
+        String fromStation = stationMap.get(stationInfoReqObj.getFromStation());
+        String toStation = stationMap.get(stationInfoReqObj.getToStation());
+
         StringBuilder urlStrBuffer = new StringBuilder(URL_STR);
         urlStrBuffer.append(TRAIN_DATE).append(stationInfoReqObj.getTrainDate())
-                .append("&").append(FROM_STATION).append(stationInfoReqObj.getFromStation())
-                .append("&").append(TO_STATION).append(stationInfoReqObj.getToStation())
+                .append("&").append(FROM_STATION).append(fromStation)
+                .append("&").append(TO_STATION).append(toStation)
                 .append("&").append(PURPOSE_CODE);
 
         HttpsURLConnection connection = null;
         try {
             URL url = new URL(urlStrBuffer.toString());
             int count = 0;
-            while (count < 5) {
+            while (count < 10) {
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.setConnectTimeout(DEFAULT_TIME_OUT);
                 connection.setRequestProperty("Cookie", COOKIE);
@@ -167,6 +178,26 @@ public class StationServiceImpl implements StationService {
             stationInfoResObj.setTicketInfo(ticketInfo);
 
             stationInfoResObjs.add(stationInfoResObj);
+        }
+
+        List<String> stationNumber = new ArrayList<>();
+        for (TrainInfoResObj trainInfoResObj : stationInfoResObjs) {
+            stationNumber.add(trainInfoResObj.getBeginCity());
+            stationNumber.add(trainInfoResObj.getEndCity());
+            stationNumber.add(trainInfoResObj.getFromCity());
+            stationNumber.add(trainInfoResObj.getToCity());
+        }
+
+        QueryWrapper<Station> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("number", stationNumber);
+        List<Station> stations = stationMapper.selectList(queryWrapper);
+        Map<String, String> stationMap = stations.stream().collect(Collectors.toMap(Station::getNumber, Station::getName, (s1, s2) -> s1));
+
+        for (TrainInfoResObj trainInfoResObj : stationInfoResObjs) {
+            trainInfoResObj.setBeginCity(stationMap.get(trainInfoResObj.getBeginCity()));
+            trainInfoResObj.setEndCity(stationMap.get(trainInfoResObj.getEndCity()));
+            trainInfoResObj.setFromCity(stationMap.get(trainInfoResObj.getFromCity()));
+            trainInfoResObj.setToCity(stationMap.get(trainInfoResObj.getToCity()));
         }
 
         return stationInfoResObjs;
