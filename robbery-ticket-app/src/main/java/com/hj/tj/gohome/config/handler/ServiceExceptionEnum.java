@@ -25,6 +25,20 @@ public enum ServiceExceptionEnum {
     ORDER_TIME_LIMIT(HttpStatus.FORBIDDEN, "订单已提交，请勿10秒内重新下单"),
 
     TICKET_QUERY_ERROR(HttpStatus.FORBIDDEN, "余票信息查询失败,请重新查询"),
+
+    STUDENT_INFO_ERROR(HttpStatus.FORBIDDEN, "学生信息不能为空"),
+
+    DISCOUNT_END_ERROR(HttpStatus.FORBIDDEN, "优惠段终不能为空"),
+
+    DISCOUNT_START_ERROR(HttpStatus.FORBIDDEN, "优惠段始不能为空"),
+
+    ENTER_YEAR_ERROR(HttpStatus.FORBIDDEN, "入学年份不正确"),
+
+    EDUCATIONAL_SYSTEM_ERROR(HttpStatus.FORBIDDEN, "学制不正确"),
+
+    STUDENT_NO_ERROR(HttpStatus.FORBIDDEN, "学号不正确"),
+
+    SCHOOL_NAME_ERROR(HttpStatus.FORBIDDEN, "学校名称不能为空"),
     ;
 
     /**
