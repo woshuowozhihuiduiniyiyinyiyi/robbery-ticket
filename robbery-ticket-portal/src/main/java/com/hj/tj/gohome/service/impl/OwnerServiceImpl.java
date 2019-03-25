@@ -83,7 +83,7 @@ public class OwnerServiceImpl implements OwnerService {
         }
 
         if (StringUtil.isNotBlank(ownerReqObj.getWxNickName())) {
-            queryWrapper.like("queryWrapper", ownerReqObj.getWxNickName());
+            queryWrapper.like("wx_nickname", ownerReqObj.getWxNickName());
         }
 
         queryWrapper.eq("status", BaseStatusEnum.UN_DELETE.getValue());
