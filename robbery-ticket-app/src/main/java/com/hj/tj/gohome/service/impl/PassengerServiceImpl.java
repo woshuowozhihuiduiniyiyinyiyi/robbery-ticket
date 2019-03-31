@@ -126,6 +126,10 @@ public class PassengerServiceImpl implements PassengerService {
             throw new ServiceException(ServiceExceptionEnum.ENTER_YEAR_ERROR);
         }
 
+        if (StringUtils.isEmpty(passengerStudentReqObj.getSchoolId())) {
+            throw new ServiceException(ServiceExceptionEnum.SCHOOL_ID_ERROR);
+        }
+
         if (StringUtils.isEmpty(passengerStudentReqObj.getSchoolName())) {
             throw new ServiceException(ServiceExceptionEnum.SCHOOL_NAME_ERROR);
         }

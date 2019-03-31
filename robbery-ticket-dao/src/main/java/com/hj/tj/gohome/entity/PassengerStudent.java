@@ -27,6 +27,11 @@ public class PassengerStudent {
     private String schoolId;
 
     /**
+     * 学校名称
+     */
+    private String schoolName;
+
+    /**
      * 学号
      */
     private String studentNo;
