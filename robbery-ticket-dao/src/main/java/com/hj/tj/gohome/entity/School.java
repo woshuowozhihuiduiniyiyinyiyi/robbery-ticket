@@ -7,9 +7,10 @@ import lombok.Data;
 
 import java.util.Date;
 
-@TableName("passenger_student")
+@TableName("school")
 @Data
-public class PassengerStudent {
+public class School {
+
     /**
      * id
      */
@@ -17,39 +18,14 @@ public class PassengerStudent {
     private Integer id;
 
     /**
-     * 乘客id
+     * 学校编码
      */
-    private Integer passengerId;
+    private String schoolCode;
 
     /**
-     * 学校id
+     * 学校名称
      */
-    private String schoolId;
-
-    /**
-     * 学号
-     */
-    private String studentNo;
-
-    /**
-     * 学制
-     */
-    private Integer educationalSystem;
-
-    /**
-     * 入学年份
-     */
-    private Integer enterYear;
-
-    /**
-     * 优惠段始
-     */
-    private String discountStart;
-
-    /**
-     * 优惠段终
-     */
-    private String discountEnd;
+    private String schoolName;
 
     /**
      * 0已删除，1未删除
@@ -75,4 +51,5 @@ public class PassengerStudent {
      * 修改人
      */
     private String updater;
+
 }
