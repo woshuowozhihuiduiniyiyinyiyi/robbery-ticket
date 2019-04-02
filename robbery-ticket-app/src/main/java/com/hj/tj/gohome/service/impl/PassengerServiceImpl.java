@@ -6,6 +6,7 @@ import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.entity.Passenger;
 import com.hj.tj.gohome.entity.PassengerStudent;
 import com.hj.tj.gohome.entity.RelOwnerPassenger;
+import com.hj.tj.gohome.enums.BaseStatusEnum;
 import com.hj.tj.gohome.enums.IdCardTypeEnum;
 import com.hj.tj.gohome.enums.PassengerTypeEnum;
 import com.hj.tj.gohome.enums.StatusEnum;
@@ -14,6 +15,7 @@ import com.hj.tj.gohome.mapper.PassengerStudentMapper;
 import com.hj.tj.gohome.mapper.RelOwnerPassengerMapper;
 import com.hj.tj.gohome.service.PassengerService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
+import com.hj.tj.gohome.vo.passenger.PassengerDetailResObj;
 import com.hj.tj.gohome.vo.passenger.PassengerResObj;
 import com.hj.tj.gohome.vo.passenger.PassengerSaveReqObj;
 import com.hj.tj.gohome.vo.passenger.PassengerStudentReqObj;
@@ -164,6 +166,32 @@ public class PassengerServiceImpl implements PassengerService {
         }
 
         return passengerResObjList;
+    }
+
+    @Override
+    public PassengerDetailResObj getPassengerDetail(Integer id) {
+        Passenger passenger = passengerMapper.selectById(id);
+        if (Objects.isNull(passenger)) {
+            return null;
+        }
+
+        PassengerDetailResObj passengerDetailResObj = new PassengerDetailResObj();
+        BeanUtils.copyProperties(passenger, passengerDetailResObj);
+        if (Objects.equals(PassengerTypeEnum.STUDENT.getType(), passenger.getType())) {
+            return passengerDetailResObj;
+        }
+
+        QueryWrapper<PassengerStudent> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("passenger_id", id).eq("status", BaseStatusEnum.UN_DELETE.getValue());
+        PassengerStudent passengerStudent = passengerStudentMapper.selectOne(queryWrapper);
+
+        if (Objects.isNull(passengerStudent)) {
+            return passengerDetailResObj;
+        }
+
+        BeanUtils.copyProperties(passengerStudent, passengerDetailResObj);
+
+        return passengerDetailResObj;
     }
 
 
