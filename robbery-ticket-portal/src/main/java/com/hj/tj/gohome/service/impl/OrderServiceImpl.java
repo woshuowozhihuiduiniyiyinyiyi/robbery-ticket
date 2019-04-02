@@ -8,10 +8,8 @@ import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.entity.*;
 import com.hj.tj.gohome.enums.BaseStatusEnum;
 import com.hj.tj.gohome.enums.OrderStatusEnum;
-import com.hj.tj.gohome.mapper.ExpectDateQueryMapper;
-import com.hj.tj.gohome.mapper.OrderExpectDateQueryMapper;
-import com.hj.tj.gohome.mapper.OrderMapper;
-import com.hj.tj.gohome.mapper.PortalUserMapper;
+import com.hj.tj.gohome.enums.PassengerTypeEnum;
+import com.hj.tj.gohome.mapper.*;
 import com.hj.tj.gohome.service.*;
 import com.hj.tj.gohome.utils.DateUtil;
 import com.hj.tj.gohome.vo.requestVo.*;
@@ -57,6 +55,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderExpectDateQueryMapper orderExpectDateQueryMapper;
+
+    @Resource
+    private PassengerStudentMapper passengerStudentMapper;
 
     @Override
     public PageInfo<OrderResObj> listOrder(OrderReqObj orderReqObj) {
@@ -251,7 +252,13 @@ public class OrderServiceImpl implements OrderService {
         List<Integer> orderIds = Arrays.asList(id);
         Map<Integer, List<Passenger>> passengerInfoMap = getPassengerInfoMap(orderIds);
 
+        // 学生信息map
+        List<Passenger> passengers = passengerInfoMap.get(id);
+        Map<Integer, PassengerStudent> passengerStudentMap = getPassengerStudentMap(passengers);
+
         OrderResObj orderResObj = convertToResObj(order, ownerInfoMap, robbingInfoMap, passengerInfoMap);
+        // 添加学生乘客额外信息
+        addPassengerStudentInfo(passengerStudentMap, orderResObj);
 
         orderResObj.setPortalUserName("");
         PortalUser portalUser = portalUserMapper.selectById(order.getPortalUserId());
@@ -260,6 +267,44 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderResObj;
+    }
+
+    private void addPassengerStudentInfo(Map<Integer, PassengerStudent> passengerStudentMap, OrderResObj orderResObj) {
+        if (!CollectionUtils.isEmpty(orderResObj.getPassengerList())) {
+            List<PassengerResObj> passengerResObjs = orderResObj.getPassengerList();
+            for (PassengerResObj passengerResObj : passengerResObjs) {
+                PassengerStudent passengerStudent = passengerStudentMap.get(passengerResObj.getPassengerId());
+                if (Objects.nonNull(passengerStudent)) {
+                    passengerResObj.setDiscountEnd(passengerStudent.getDiscountEnd());
+                    passengerResObj.setDiscountStart(passengerStudent.getDiscountStart());
+                    passengerResObj.setEducationalSystem(passengerStudent.getEducationalSystem());
+                    passengerResObj.setEnterYear(passengerStudent.getEnterYear());
+                    passengerResObj.setSchoolName(passengerStudent.getSchoolName());
+                    passengerResObj.setStudentNo(passengerStudent.getStudentNo());
+                }
+            }
+        }
+    }
+
+    private Map<Integer, PassengerStudent> getPassengerStudentMap(List<Passenger> passengers) {
+        if (CollectionUtils.isEmpty(passengers)) {
+            return new HashMap<>();
+        }
+
+        List<Integer> passengerStudentIds = passengers.stream().filter(p -> Objects.equals(p.getType(),
+                PassengerTypeEnum.STUDENT.getType())).map(Passenger::getId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(passengerStudentIds)) {
+            return new HashMap<>();
+        }
+
+        QueryWrapper<PassengerStudent> studentQueryWrapper = new QueryWrapper<>();
+        studentQueryWrapper.in("passenger_id", passengerStudentIds);
+        List<PassengerStudent> passengerStudents = passengerStudentMapper.selectList(studentQueryWrapper);
+        if (CollectionUtils.isEmpty(passengerStudents)) {
+            return new HashMap<>();
+        }
+
+        return passengerStudents.stream().collect(Collectors.toMap(PassengerStudent::getPassengerId, p -> p, (p1, p2) -> p1));
     }
 
     @Override
@@ -564,6 +609,13 @@ public class OrderServiceImpl implements OrderService {
                 PassengerResObj passengerResObj = new PassengerResObj();
                 passengerResObj.setIdCard(passenger.getIdCard());
                 passengerResObj.setName(passenger.getName());
+                passengerResObj.setType(passenger.getType());
+                passengerResObj.setPassengerId(passenger.getId());
+                PassengerTypeEnum passengerTypeEnum = PassengerTypeEnum.getPassengerTypeEnumByType(passenger.getType());
+                if (Objects.nonNull(passengerTypeEnum)) {
+                    passengerResObj.setTypeStr(passengerTypeEnum.getDescription());
+                }
+
                 passengerResObjs.add(passengerResObj);
             }
 

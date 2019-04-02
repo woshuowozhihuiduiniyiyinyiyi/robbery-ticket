@@ -5,7 +5,7 @@ mybatis-plus:
 auth:
   jwt:
     secret: p1BlCbbhyVpXptA3YBEWdjdJ592rclZP
-    expire: 3600
+    expire: 36000
 
 
 #默认使用配置

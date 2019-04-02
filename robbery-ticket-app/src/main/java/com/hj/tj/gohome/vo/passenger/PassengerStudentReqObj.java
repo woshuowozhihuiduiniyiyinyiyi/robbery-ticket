@@ -11,7 +11,12 @@ public class PassengerStudentReqObj {
     private Integer passengerId;
 
     /**
-     *
+     * 学校id
+     */
+    private Integer schoolId;
+
+    /**
+     * 学校名称
      */
     private String schoolName;
 

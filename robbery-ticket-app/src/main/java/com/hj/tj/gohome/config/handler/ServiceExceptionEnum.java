@@ -38,6 +38,8 @@ public enum ServiceExceptionEnum {
 
     STUDENT_NO_ERROR(HttpStatus.FORBIDDEN, "学号不正确"),
 
+    SCHOOL_ID_ERROR(HttpStatus.FORBIDDEN, "学校id不能为空"),
+
     SCHOOL_NAME_ERROR(HttpStatus.FORBIDDEN, "学校名称不能为空"),
     ;
 
