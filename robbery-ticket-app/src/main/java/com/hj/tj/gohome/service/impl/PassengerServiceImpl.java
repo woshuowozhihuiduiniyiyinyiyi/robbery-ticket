@@ -15,10 +15,7 @@ import com.hj.tj.gohome.mapper.PassengerStudentMapper;
 import com.hj.tj.gohome.mapper.RelOwnerPassengerMapper;
 import com.hj.tj.gohome.service.PassengerService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
-import com.hj.tj.gohome.vo.passenger.PassengerDetailResObj;
-import com.hj.tj.gohome.vo.passenger.PassengerResObj;
-import com.hj.tj.gohome.vo.passenger.PassengerSaveReqObj;
-import com.hj.tj.gohome.vo.passenger.PassengerStudentReqObj;
+import com.hj.tj.gohome.vo.passenger.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -181,7 +178,16 @@ public class PassengerServiceImpl implements PassengerService {
 
         PassengerDetailResObj passengerDetailResObj = new PassengerDetailResObj();
         BeanUtils.copyProperties(passenger, passengerDetailResObj);
-        if (Objects.equals(PassengerTypeEnum.STUDENT.getType(), passenger.getType())) {
+        PassengerTypeEnum passengerTypeEnum = PassengerTypeEnum.getPassengerTypeEnumByType(passenger.getType());
+        if (Objects.nonNull(passengerTypeEnum)) {
+            passengerDetailResObj.setTypeStr(passengerTypeEnum.getDescription());
+        }
+        
+        IdCardTypeEnum idCardType = IdCardTypeEnum.getIdCardTypeEnumByType(passenger.getIdCardType());
+        if (Objects.nonNull(idCardType)) {
+            passengerDetailResObj.setIdCardTypeStr(idCardType.getDescription());
+        }
+        if (!Objects.equals(PassengerTypeEnum.STUDENT.getType(), passenger.getType())) {
             return passengerDetailResObj;
         }
 
@@ -193,7 +199,9 @@ public class PassengerServiceImpl implements PassengerService {
             return passengerDetailResObj;
         }
 
-        BeanUtils.copyProperties(passengerStudent, passengerDetailResObj);
+        PassengerStudentResObj passengerStudentResObj = new PassengerStudentResObj();
+        BeanUtils.copyProperties(passengerStudent, passengerStudentResObj);
+        passengerDetailResObj.setPassengerStudentResObj(passengerStudentResObj);
 
         return passengerDetailResObj;
     }
