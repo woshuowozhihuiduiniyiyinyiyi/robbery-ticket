@@ -24,7 +24,7 @@ public class PassengerStudent {
     /**
      * 学校id
      */
-    private String schoolId;
+    private Integer schoolId;
 
     /**
      * 学校名称

@@ -24,7 +24,7 @@ public class PassengerSaveReqObj {
      * 乘客类型
      */
     @Min(value = 0, message = "乘客类型不正确")
-    @Max(value = 2, message = "乘客类型不正确")
+    @Max(value = 3, message = "乘客类型不正确")
     private Integer type;
 
     /**
