@@ -181,7 +181,18 @@ public class PassengerServiceImpl implements PassengerService {
 
         PassengerDetailResObj passengerDetailResObj = new PassengerDetailResObj();
         BeanUtils.copyProperties(passenger, passengerDetailResObj);
-        if (Objects.equals(PassengerTypeEnum.STUDENT.getType(), passenger.getType())) {
+
+        PassengerTypeEnum passengerTypeEnum = PassengerTypeEnum.getPassengerTypeEnumByType(passenger.getType());
+        if (Objects.nonNull(passengerTypeEnum)) {
+            passengerDetailResObj.setTypeStr(passengerTypeEnum.getDescription());
+        }
+
+        IdCardTypeEnum idCardTypeEnum = IdCardTypeEnum.getIdCardTypeEnumByType(passenger.getIdCardType());
+        if (Objects.nonNull(idCardTypeEnum)) {
+            passengerDetailResObj.setIdCardTypeStr(idCardTypeEnum.getDescription());
+        }
+
+        if (!Objects.equals(PassengerTypeEnum.STUDENT.getType(), passenger.getType())) {
             return passengerDetailResObj;
         }
 
