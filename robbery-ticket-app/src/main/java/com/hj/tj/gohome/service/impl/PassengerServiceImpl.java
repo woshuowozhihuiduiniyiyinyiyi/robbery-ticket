@@ -15,7 +15,10 @@ import com.hj.tj.gohome.mapper.PassengerStudentMapper;
 import com.hj.tj.gohome.mapper.RelOwnerPassengerMapper;
 import com.hj.tj.gohome.service.PassengerService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
-import com.hj.tj.gohome.vo.passenger.*;
+import com.hj.tj.gohome.vo.passenger.PassengerDetailResObj;
+import com.hj.tj.gohome.vo.passenger.PassengerResObj;
+import com.hj.tj.gohome.vo.passenger.PassengerSaveReqObj;
+import com.hj.tj.gohome.vo.passenger.PassengerStudentReqObj;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -182,7 +185,7 @@ public class PassengerServiceImpl implements PassengerService {
         if (Objects.nonNull(passengerTypeEnum)) {
             passengerDetailResObj.setTypeStr(passengerTypeEnum.getDescription());
         }
-        
+
         IdCardTypeEnum idCardType = IdCardTypeEnum.getIdCardTypeEnumByType(passenger.getIdCardType());
         if (Objects.nonNull(idCardType)) {
             passengerDetailResObj.setIdCardTypeStr(idCardType.getDescription());

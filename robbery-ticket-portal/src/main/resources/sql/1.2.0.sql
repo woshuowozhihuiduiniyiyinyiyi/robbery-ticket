@@ -3,6 +3,7 @@ CREATE TABLE `passenger_student` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `passenger_id` int(11) NOT NULL COMMENT '旅客表id',
   `school_id` int(11) NOT NULL DEFAULT '0' COMMENT '学校id',
+  `school_name` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '学校名称',
   `student_no` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '学号',
   `educational_system` int(4) NOT NULL DEFAULT '0' COMMENT '学制',
   `enter_year` int(5) NOT NULL COMMENT '入学年份',
@@ -15,7 +16,7 @@ CREATE TABLE `passenger_student` (
   `status` tinyint(4) unsigned NOT NULL DEFAULT '1' COMMENT '旅客状态，0已删除，1未删除',
   PRIMARY KEY (`id`),
   KEY `idx_passengerId` (`passenger_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ;
 
 
 -- 2.新建学校表
@@ -30,5 +31,7 @@ CREATE TABLE `school` (
   `status` tinyint(4) unsigned NOT NULL DEFAULT '1' COMMENT '旅客状态，0已删除，1未删除',
   PRIMARY KEY (`id`)
 ) ;
+
+
 
 
