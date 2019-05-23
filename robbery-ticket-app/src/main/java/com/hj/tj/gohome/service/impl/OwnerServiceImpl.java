@@ -84,7 +84,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public String createTourist() throws Exception {
+    public String createTourist() {
         Owner owner = new Owner();
         owner.setCreatedAt(new Date());
         ownerMapper.insert(owner);

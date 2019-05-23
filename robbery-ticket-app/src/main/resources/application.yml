@@ -17,6 +17,11 @@ auth:
     expire: 2592000
     header: 22f4830ec0a499683c117136444bb6b6
 
+oss:
+  accessKeyId: LTAIvpJFVQqwqEzH
+  accessKeySecret: m334L84MeRaPuR5bvM8ESJ3pIDWIRA
+  endpoint: oss-cn-shenzhen.aliyuncs.com
+  bucketName: robbery-ticket
 
 #默认使用配置
 spring:
