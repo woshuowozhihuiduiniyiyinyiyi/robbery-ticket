@@ -38,38 +38,8 @@ public class PassengerDetailResObj {
     private String idCard;
 
     /**
-     * 学校id
+     * 学生票相关信息
      */
-    private Integer schoolId;
-
-    /**
-     * 学校名称
-     */
-    private String schoolName;
-
-    /**
-     * 学号
-     */
-    private String studentNo;
-
-    /**
-     * 学制
-     */
-    private Integer educationalSystem;
-
-    /**
-     * 入学年份
-     */
-    private Integer enterYear;
-
-    /**
-     * 优惠段始
-     */
-    private String discountStart;
-
-    /**
-     * 优惠段终
-     */
-    private String discountEnd;
+    private PassengerStudentResObj passengerStudentResObj;
 
 }
