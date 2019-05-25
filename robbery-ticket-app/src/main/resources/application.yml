@@ -27,6 +27,9 @@ oss:
 spring:
   profiles:
     active: test
+  servlet:
+    multipart:
+      max-file-size: 10MB
 
 server:
   servlet:
@@ -36,6 +39,7 @@ server:
     key-store: classpath:1614217_www.home931.top.pfx
     key-store-password: 0r8jLO79
     key-store-type: PKCS12
+
 
 ---
 #开发配置

@@ -44,7 +44,7 @@ public class OwnerServiceImpl implements OwnerService {
             throw new ServiceException(ServiceExceptionEnum.WX_GET_USER_ERROR);
         }
 
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<Owner> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("open_id", userInfo.getOpenId());
         queryWrapper.eq("status", StatusEnum.UN_DELETE.getStatus());
         Owner owner = ownerMapper.selectOne(queryWrapper);
@@ -78,9 +78,7 @@ public class OwnerServiceImpl implements OwnerService {
             throw new ServiceException(ServiceExceptionEnum.OWNER_NOT_EXISTS);
         }
 
-        String sid = tokenHelper.generate(owner.getId(), "miniapp", owner.getWxNickname());
-
-        return sid;
+        return tokenHelper.generate(owner.getId(), "miniapp", owner.getWxNickname());
     }
 
     @Override
@@ -89,8 +87,6 @@ public class OwnerServiceImpl implements OwnerService {
         owner.setCreatedAt(new Date());
         ownerMapper.insert(owner);
 
-        String sid = tokenHelper.generate(owner.getId(), "h5", "");
-
-        return sid;
+        return tokenHelper.generate(owner.getId(), "h5", "");
     }
 }

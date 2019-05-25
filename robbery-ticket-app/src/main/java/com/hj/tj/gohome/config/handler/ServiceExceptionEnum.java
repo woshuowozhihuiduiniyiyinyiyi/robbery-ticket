@@ -8,7 +8,7 @@ public enum ServiceExceptionEnum {
     /**
      * 系统错误
      */
-    SYS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "系统错误"),
+    SYS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "系统错误, 请稍后重试"),
 
     /**
      * 用户错误
@@ -41,7 +41,8 @@ public enum ServiceExceptionEnum {
     SCHOOL_ID_ERROR(HttpStatus.FORBIDDEN, "学校id不能为空"),
 
     SCHOOL_NAME_ERROR(HttpStatus.FORBIDDEN, "学校名称不能为空"),
-    ;
+
+    IMG_SEC(HttpStatus.FORBIDDEN, "图片包含非法信息"),;
 
     /**
      * 错误码
