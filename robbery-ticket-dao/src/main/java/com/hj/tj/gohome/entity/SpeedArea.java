@@ -23,6 +23,11 @@ public class SpeedArea {
     private Integer id;
 
     /**
+     * 最大置顶数
+     */
+    private Integer maxTopNum;
+
+    /**
      * 地区名
      */
     private String name;

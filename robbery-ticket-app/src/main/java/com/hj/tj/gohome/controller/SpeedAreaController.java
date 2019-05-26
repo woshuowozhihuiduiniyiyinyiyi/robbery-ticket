@@ -16,13 +16,13 @@ import java.util.List;
  * @since 2019/5/25 17:51
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/speed/area")
 public class SpeedAreaController {
 
     @Resource
     private SpeedAreaService speedAreaService;
 
-    @GetMapping("/area/list")
+    @GetMapping("/list")
     public ResponseEntity<List<SpeedAreaResult>> speedAreaResult() {
         return ResponseEntity.ok(speedAreaService.listSpeedArea());
     }
