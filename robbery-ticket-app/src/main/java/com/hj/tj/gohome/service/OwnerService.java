@@ -1,7 +1,10 @@
 package com.hj.tj.gohome.service;
 
+import com.hj.tj.gohome.entity.Owner;
 import com.hj.tj.gohome.vo.login.WxLoginReqObj;
 import com.hj.tj.gohome.vo.login.WxLoginResObj;
+
+import java.util.List;
 
 public interface OwnerService {
 
@@ -29,4 +32,9 @@ public interface OwnerService {
      * @throws Exception
      */
     String createTourist() throws Exception;
+
+    /**
+     * 根据id列表获取客户信息
+     */
+    List<Owner> selectByIds(List<Integer> ownerIds);
 }

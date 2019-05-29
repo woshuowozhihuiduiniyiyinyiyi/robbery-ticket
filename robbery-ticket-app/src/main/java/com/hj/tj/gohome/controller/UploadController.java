@@ -43,24 +43,26 @@ public class UploadController {
         String type = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
         // 1M 以下进行敏感信息审核
-        if (file.getSize() <= 1024 * 1024) {
-            String prefix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-            File excelFile = File.createTempFile(UUID.randomUUID().toString().replaceAll("-", ""), prefix);
-            file.transferTo(excelFile);
-
-            try {
-                wxMaService.imgSecCheck(excelFile);
-            } catch (WxErrorException e) {
-                WxError error = e.getError();
-                if (87014 == error.getErrorCode()) {
-                    throw new ServiceException(ServiceExceptionEnum.IMG_SEC);
-                } else {
-                    throw new ServiceException(ServiceExceptionEnum.SYS_ERROR);
-                }
-            }
-
-            deleteFile(excelFile);
+        if (file.getSize() > 1024 * 1024) {
+            throw new ServiceException(ServiceExceptionEnum.IMG_SITE_LIMIT);
         }
+
+        String prefix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        File excelFile = File.createTempFile(UUID.randomUUID().toString().replaceAll("-", ""), prefix);
+        file.transferTo(excelFile);
+
+        try {
+            wxMaService.imgSecCheck(excelFile);
+        } catch (WxErrorException e) {
+            WxError error = e.getError();
+            if (87014 == error.getErrorCode()) {
+                throw new ServiceException(ServiceExceptionEnum.IMG_SEC);
+            } else {
+                throw new ServiceException(ServiceExceptionEnum.SYS_ERROR);
+            }
+        }
+
+        deleteFile(excelFile);
 
         log.info("User:{},type:{},Upload File:{},Size:{},ContentType:{}",
                 OwnerContextHelper.getOwnerId(), type,

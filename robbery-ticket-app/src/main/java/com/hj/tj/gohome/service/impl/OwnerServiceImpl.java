@@ -9,6 +9,7 @@ import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.config.jwt.TokenHelper;
 import com.hj.tj.gohome.consts.OwnerConstants;
 import com.hj.tj.gohome.entity.Owner;
+import com.hj.tj.gohome.entity.SpeedDynamic;
 import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.OwnerMapper;
 import com.hj.tj.gohome.service.OwnerService;
@@ -16,10 +17,14 @@ import com.hj.tj.gohome.vo.login.WxLoginReqObj;
 import com.hj.tj.gohome.vo.login.WxLoginResObj;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class OwnerServiceImpl implements OwnerService {
@@ -74,7 +79,7 @@ public class OwnerServiceImpl implements OwnerService {
         QueryWrapper<Owner> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("open_id", session.getOpenid());
         Owner owner = ownerMapper.selectOne(queryWrapper);
-        if(Objects.isNull(owner)){
+        if (Objects.isNull(owner)) {
             throw new ServiceException(ServiceExceptionEnum.OWNER_NOT_EXISTS);
         }
 
@@ -88,5 +93,16 @@ public class OwnerServiceImpl implements OwnerService {
         ownerMapper.insert(owner);
 
         return tokenHelper.generate(owner.getId(), "h5", "");
+    }
+
+    @Override
+    public List<Owner> selectByIds(List<Integer> ownerIds) {
+        if (CollectionUtils.isEmpty(ownerIds)) {
+            return new ArrayList<>();
+        }
+
+        QueryWrapper<Owner> ownerQueryWrapper = new QueryWrapper<>();
+        ownerQueryWrapper.in("id", ownerIds);
+        return ownerMapper.selectList(ownerQueryWrapper);
     }
 }

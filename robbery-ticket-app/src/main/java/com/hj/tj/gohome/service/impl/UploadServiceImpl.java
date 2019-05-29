@@ -1,23 +1,16 @@
 package com.hj.tj.gohome.service.impl;
 
 import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.common.comm.Protocol;
 import com.hj.tj.gohome.config.oss.OssProperties;
 import com.hj.tj.gohome.service.UploadService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * @author tangj
