@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicDetailResult;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicParam;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicResult;
+import com.hj.tj.gohome.vo.dynamic.SpeedDynamicSaveParam;
 
 import java.util.List;
 
@@ -32,4 +33,12 @@ public interface SpeedDynamicService {
      * @return
      */
     SpeedDynamicDetailResult findById(Integer id);
+
+    /**
+     * 发布动态或者回复
+     *
+     * @param speedDynamicSaveParam
+     * @return
+     */
+    Integer insert(SpeedDynamicSaveParam speedDynamicSaveParam);
 }

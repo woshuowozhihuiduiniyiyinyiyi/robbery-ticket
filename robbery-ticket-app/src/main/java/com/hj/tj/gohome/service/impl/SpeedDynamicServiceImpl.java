@@ -11,9 +11,11 @@ import com.hj.tj.gohome.mapper.OwnerMapper;
 import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
 import com.hj.tj.gohome.service.OwnerService;
 import com.hj.tj.gohome.service.SpeedDynamicService;
+import com.hj.tj.gohome.utils.OwnerContextHelper;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicDetailResult;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicParam;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicResult;
+import com.hj.tj.gohome.vo.dynamic.SpeedDynamicSaveParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -107,6 +109,37 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
         genReplySpeedDynamic(speedDynamic.getId(), speedDynamicDetailResult);
 
         return speedDynamicDetailResult;
+    }
+
+    @Override
+    public Integer insert(SpeedDynamicSaveParam speedDynamicSaveParam) {
+        SpeedDynamic speedDynamic = new SpeedDynamic();
+        speedDynamic.setContent(speedDynamicSaveParam.getContent());
+        speedDynamic.setSpeedAreaId(speedDynamicSaveParam.getSpeedAreaId());
+        speedDynamic.setOwnerId(OwnerContextHelper.getOwnerId());
+        speedDynamic.setCreator(OwnerContextHelper.getOwnerId().toString());
+        speedDynamic.setUpdater(OwnerContextHelper.getOwnerId().toString());
+
+        if (Objects.nonNull(speedDynamicSaveParam.getParentId())) {
+            SpeedDynamic parentDynamic = speedDynamicMapper.selectById(speedDynamicSaveParam.getParentId());
+            if (Objects.nonNull(parentDynamic)) {
+                speedDynamic.setParentId(parentDynamic.getId());
+                speedDynamic.setRootId(parentDynamic.getRootId());
+                if (Objects.equals(parentDynamic.getRootId(), 0)) {
+                    speedDynamic.setRootId(parentDynamic.getId());
+                }
+                speedDynamic.setReplyOwnerId(parentDynamic.getOwnerId());
+                speedDynamic.setSpeedAreaId(parentDynamic.getSpeedAreaId());
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(speedDynamicSaveParam.getPictureList())) {
+            speedDynamic.setPicture(String.join("`", speedDynamicSaveParam.getPictureList()));
+        }
+
+        speedDynamicMapper.insert(speedDynamic);
+
+        return speedDynamic.getId();
     }
 
     private void genReplySpeedDynamic(Integer speedDynamicId, SpeedDynamicDetailResult speedDynamicDetailResult) {
