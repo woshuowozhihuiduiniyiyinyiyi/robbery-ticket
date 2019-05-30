@@ -1,6 +1,7 @@
 package com.hj.tj.gohome.service;
 
 import com.github.pagehelper.PageInfo;
+import com.hj.tj.gohome.vo.dynamic.SpeedDynamicDetailResult;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicParam;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicResult;
 
@@ -18,8 +19,17 @@ public interface SpeedDynamicService {
 
     /**
      * 列表
+     *
      * @param speedDynamicParam
      * @return
      */
     PageInfo<SpeedDynamicResult> listSpeedDynamic(SpeedDynamicParam speedDynamicParam);
+
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    SpeedDynamicDetailResult findById(Integer id);
 }

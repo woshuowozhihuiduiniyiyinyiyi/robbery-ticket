@@ -2,6 +2,7 @@ package com.hj.tj.gohome.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.service.SpeedDynamicService;
+import com.hj.tj.gohome.vo.dynamic.SpeedDynamicDetailResult;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicParam;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicResult;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,12 @@ public class SpeedDynamicController {
 
     @PostMapping("/list")
     public ResponseEntity<PageInfo<SpeedDynamicResult>> dynamicList(@Validated @RequestBody SpeedDynamicParam speedDynamicParam) {
-        PageInfo<SpeedDynamicResult> speedDynamicResultPageInfo = dynamicService.listSpeedDynamic(speedDynamicParam);
-        return ResponseEntity.ok(speedDynamicResultPageInfo);
+        return ResponseEntity.ok(dynamicService.listSpeedDynamic(speedDynamicParam));
     }
 
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<SpeedDynamicDetailResult> dynamicDetail(@PathVariable("id") Integer id) {
+        SpeedDynamicDetailResult speedDynamicDetailResult = dynamicService.findById(id);
+        return ResponseEntity.ok(speedDynamicDetailResult);
+    }
 }

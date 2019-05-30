@@ -80,7 +80,7 @@ public class SpeedDynamic {
     /**
      * 回复用户id
      */
-    private Integer repeatOwnerId;
+    private Integer replyOwnerId;
 
     /**
      * 状态，0已删除，1未删除
