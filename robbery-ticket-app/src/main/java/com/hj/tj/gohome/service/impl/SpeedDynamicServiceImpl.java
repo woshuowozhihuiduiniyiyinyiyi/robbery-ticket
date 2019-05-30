@@ -55,6 +55,7 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
                 speedDynamicResult.setAvatarUrl(owner.getAvatarUrl());
             }
 
+            speedDynamicResult.setPictureList(new ArrayList<>());
             if (!StringUtils.isEmpty(speedDynamic.getPicture())) {
                 String[] pictureList = speedDynamic.getPicture().split("`");
                 speedDynamicResult.setPictureList(Arrays.asList(pictureList));

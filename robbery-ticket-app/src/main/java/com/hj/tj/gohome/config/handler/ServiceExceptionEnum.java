@@ -42,7 +42,8 @@ public enum ServiceExceptionEnum {
 
     SCHOOL_NAME_ERROR(HttpStatus.FORBIDDEN, "学校名称不能为空"),
 
-    IMG_SEC(HttpStatus.FORBIDDEN, "图片包含非法信息"),;
+    IMG_SEC(HttpStatus.FORBIDDEN, "图片包含非法信息"),
+    IMG_SITE_LIMIT(HttpStatus.FORBIDDEN, "图片最大1M"),;
 
     /**
      * 错误码

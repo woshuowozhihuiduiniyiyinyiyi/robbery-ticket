@@ -20,7 +20,7 @@ public class SpeedDynamic {
     /**
      * 发动态的用户id
      */
-    private Integer userId;
+    private Integer ownerId;
 
     /**
      * 所属地区id
@@ -75,7 +75,7 @@ public class SpeedDynamic {
     /**
      * 回复用户id
      */
-    private Integer repeatUserId;
+    private Integer repeatOwnerId;
 
     /**
      * 状态，0已删除，1未删除

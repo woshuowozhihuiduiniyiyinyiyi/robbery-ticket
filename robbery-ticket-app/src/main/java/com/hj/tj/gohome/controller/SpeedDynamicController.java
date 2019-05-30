@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/auth/speed/dynamic")
+@RequestMapping("/api/speed/dynamic")
 public class SpeedDynamicController {
 
     @Resource
@@ -22,4 +22,6 @@ public class SpeedDynamicController {
     public ResponseEntity<List<SpeedDynamicResult>> dynamicTopList(@PathVariable("areaId") Integer areaId) {
         return ResponseEntity.ok(dynamicService.dynamicTopList(areaId));
     }
+
+
 }
