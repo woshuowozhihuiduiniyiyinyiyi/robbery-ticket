@@ -58,6 +58,11 @@ public class SpeedDynamic {
     private Integer praiseNum;
 
     /**
+     * 分享数
+     */
+    private Integer shareNum;
+
+    /**
      * 图片
      */
     private String picture;
