@@ -67,7 +67,6 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
     public PageInfo<SpeedDynamicResult> listSpeedDynamic(SpeedDynamicParam speedDynamicParam) {
         QueryWrapper<SpeedDynamic> speedDynamicQueryWrapper = new QueryWrapper<>();
         speedDynamicQueryWrapper.eq("speed_area_id", speedDynamicParam.getAreaId())
-                .eq("root_id", 0)
                 .eq("status", BaseStatusEnum.UN_DELETE.getValue());
 
         PageHelper.startPage(speedDynamicParam.getPage().getPage(), speedDynamicParam.getPage().getSize(),
@@ -102,13 +101,9 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
             return new SpeedDynamicDetailResult();
         }
 
-        List<Owner> owners = ownerService.selectByIds(Arrays.asList(speedDynamic.getOwnerId(), speedDynamic.getReplyOwnerId()));
-        Map<Integer, Owner> ownerMap = owners.stream().collect(Collectors.toMap(Owner::getId, o -> o));
-        SpeedDynamicDetailResult speedDynamicDetailResult = genSpeedDynamicDetailResult(speedDynamic, ownerMap);
+        Owner owner = ownerMapper.selectById(speedDynamic.getOwnerId());
 
-        genReplySpeedDynamic(speedDynamic.getId(), speedDynamicDetailResult);
-
-        return speedDynamicDetailResult;
+        return genSpeedDynamicDetailResult(speedDynamic, owner);
     }
 
     @Override
@@ -120,19 +115,6 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
         speedDynamic.setCreator(OwnerContextHelper.getOwnerId().toString());
         speedDynamic.setUpdater(OwnerContextHelper.getOwnerId().toString());
 
-        if (Objects.nonNull(speedDynamicSaveParam.getParentId())) {
-            SpeedDynamic parentDynamic = speedDynamicMapper.selectById(speedDynamicSaveParam.getParentId());
-            if (Objects.nonNull(parentDynamic)) {
-                speedDynamic.setParentId(parentDynamic.getId());
-                speedDynamic.setRootId(parentDynamic.getRootId());
-                if (Objects.equals(parentDynamic.getRootId(), 0)) {
-                    speedDynamic.setRootId(parentDynamic.getId());
-                }
-                speedDynamic.setReplyOwnerId(parentDynamic.getOwnerId());
-                speedDynamic.setSpeedAreaId(parentDynamic.getSpeedAreaId());
-            }
-        }
-
         if (!CollectionUtils.isEmpty(speedDynamicSaveParam.getPictureList())) {
             speedDynamic.setPicture(String.join("`", speedDynamicSaveParam.getPictureList()));
         }
@@ -142,71 +124,13 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
         return speedDynamic.getId();
     }
 
-    private void genReplySpeedDynamic(Integer speedDynamicId, SpeedDynamicDetailResult speedDynamicDetailResult) {
-        QueryWrapper<SpeedDynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("root_id", speedDynamicId)
-                .eq("status", BaseStatusEnum.UN_DELETE.getValue());
-        List<SpeedDynamic> replySpeedDynamics = speedDynamicMapper.selectList(queryWrapper);
-
-        if (!CollectionUtils.isEmpty(replySpeedDynamics)) {
-            // 组装回复内容
-            Map<Integer, List<SpeedDynamic>> replySpeedDynamicMap = replySpeedDynamics.stream()
-                    .collect(Collectors.groupingBy(SpeedDynamic::getParentId));
-
-            List<Integer> ownerIds = new ArrayList<>();
-            List<Integer> userIds = replySpeedDynamics.stream().map(SpeedDynamic::getOwnerId).collect(Collectors.toList());
-            List<Integer> replyOwnerIds = replySpeedDynamics.stream().map(SpeedDynamic::getReplyOwnerId).collect(Collectors.toList());
-            ownerIds.addAll(userIds);
-            ownerIds.addAll(replyOwnerIds);
-            List<Owner> owners = ownerService.selectByIds(ownerIds);
-            Map<Integer, Owner> ownerMap = owners.stream().collect(Collectors.toMap(Owner::getId, o -> o));
-
-            recursiveReplyTree(speedDynamicDetailResult, replySpeedDynamicMap, ownerMap);
-        }
-    }
-
-    /**
-     * 递归构建回复树
-     *
-     * @param speedDynamicDetailResult
-     * @param replySpeedDynamicMap
-     */
-    private void recursiveReplyTree(SpeedDynamicDetailResult speedDynamicDetailResult,
-                                    Map<Integer, List<SpeedDynamic>> replySpeedDynamicMap,
-                                    Map<Integer, Owner> ownerMap) {
-        if (Objects.isNull(speedDynamicDetailResult)) {
-            return;
-        }
-
-        List<SpeedDynamic> speedDynamics = replySpeedDynamicMap.get(speedDynamicDetailResult.getId());
-        if (CollectionUtils.isEmpty(speedDynamics)) {
-            return;
-        }
-
-        List<SpeedDynamicDetailResult> childrenReplyList = new ArrayList<>();
-        for (SpeedDynamic tempSpeedDynamic : speedDynamics) {
-            SpeedDynamicDetailResult tempSpeedDynamicDetailResult = genSpeedDynamicDetailResult(tempSpeedDynamic, ownerMap);
-            recursiveReplyTree(tempSpeedDynamicDetailResult, replySpeedDynamicMap, ownerMap);
-            childrenReplyList.add(tempSpeedDynamicDetailResult);
-        }
-
-        speedDynamicDetailResult.setReplyList(childrenReplyList);
-    }
-
-    private SpeedDynamicDetailResult genSpeedDynamicDetailResult(SpeedDynamic speedDynamic, Map<Integer, Owner> ownerMap) {
+    private SpeedDynamicDetailResult genSpeedDynamicDetailResult(SpeedDynamic speedDynamic, Owner owner) {
         SpeedDynamicDetailResult speedDynamicDetailResult = new SpeedDynamicDetailResult();
         BeanUtils.copyProperties(speedDynamic, speedDynamicDetailResult);
 
-        Owner owner = ownerMap.get(speedDynamic.getOwnerId());
         if (Objects.nonNull(owner)) {
             speedDynamicDetailResult.setAvatarUrl(owner.getAvatarUrl());
             speedDynamicDetailResult.setWxNickName(owner.getWxNickname());
-        }
-
-        Owner repeatOwner = ownerMap.get(speedDynamic.getReplyOwnerId());
-        if (Objects.nonNull(repeatOwner)) {
-            speedDynamicDetailResult.setReplyOwnerAvatarUrl(repeatOwner.getAvatarUrl());
-            speedDynamicDetailResult.setReplyOwnerWxNickname(repeatOwner.getWxNickname());
         }
 
         if (!StringUtils.isEmpty(speedDynamic.getPicture())) {

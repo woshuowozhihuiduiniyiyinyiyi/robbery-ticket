@@ -14,11 +14,6 @@ import java.util.List;
 public class SpeedDynamicSaveParam {
 
     /**
-     * 父动态id
-     */
-    private Integer parentId;
-
-    /**
      * 内容
      */
     @NotEmpty(message = "发布内容不能为空")
@@ -32,5 +27,6 @@ public class SpeedDynamicSaveParam {
     /**
      * 地区id
      */
+    @NotEmpty(message = "地区id不能为空")
     private Integer speedAreaId;
 }

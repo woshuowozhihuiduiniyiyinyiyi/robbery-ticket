@@ -8,8 +8,8 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("speed_dynamic")
-public class SpeedDynamic {
+@TableName("speed_comment")
+public class SpeedComment {
 
     /**
      * id
@@ -18,39 +18,29 @@ public class SpeedDynamic {
     private Integer id;
 
     /**
-     * 发动态的用户id
+     * 动态id
+     */
+    private Integer speedDynamicId;
+
+    /**
+     * 评论用户id
      */
     private Integer ownerId;
 
     /**
-     * 所属地区id
+     * 回复用户id
      */
-    private Integer speedAreaId;
+    private Integer replyOwnerId;
 
     /**
-     * 是否置顶,0否1是
-     */
-    private Integer hasTop;
-
-    /**
-     * 置顶过期时间
-     */
-    private Date topExpire;
-
-    /**
-     * 内容
+     * 评论内容
      */
     private String content;
 
     /**
-     * 发布时间
+     * 回复数
      */
-    private Date postTime;
-
-    /**
-     * 评论数
-     */
-    private Integer commentNum;
+    private Integer replyNum;
 
     /**
      * 点赞数
@@ -66,6 +56,16 @@ public class SpeedDynamic {
      * 图片
      */
     private String picture;
+
+    /**
+     * 提交时间
+     */
+    private Date postTime;
+
+    /**
+     * 根id，评论的根id为0
+     */
+    private Integer rootId;
 
     /**
      * 状态，0已删除，1未删除
