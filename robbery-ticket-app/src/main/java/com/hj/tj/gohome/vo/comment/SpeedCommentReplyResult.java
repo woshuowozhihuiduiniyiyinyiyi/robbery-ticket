@@ -26,6 +26,11 @@ public class SpeedCommentReplyResult {
     private String replyWxNickName = "";
 
     /**
+     * 回复内容
+     */
+    private String content;
+
+    /**
      * 回复图片
      */
     private List<String> pictureList = new ArrayList<>();
