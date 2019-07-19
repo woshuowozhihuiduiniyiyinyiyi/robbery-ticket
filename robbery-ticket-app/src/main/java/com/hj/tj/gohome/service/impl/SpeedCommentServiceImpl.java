@@ -134,20 +134,19 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
             if (Objects.isNull(speedDynamic)) {
                 throw new ServiceException(ServiceExceptionEnum.DISCOUNT_END_ERROR);
             }
+            speedComment.setReplyOwnerId(speedDynamic.getOwnerId());
             speedComment.setSpeedDynamicId(speedCommentSaveParam.getSpeedDynamicId());
+
             // 动态评论数+1
             SpeedDynamic dynamicUpdateRecord = new SpeedDynamic();
             dynamicUpdateRecord.setId(speedDynamic.getId());
             dynamicUpdateRecord.setCommentNum(speedDynamic.getCommentNum() + 1);
-
             speedDynamicMapper.updateById(dynamicUpdateRecord);
         }
 
         speedCommentMapper.insert(speedComment);
 
         speedCommentSaveParam.setId(speedComment.getId());
-
-
     }
 
     private void updateSpeedComment(SpeedCommentSaveParam speedCommentSaveParam) {
