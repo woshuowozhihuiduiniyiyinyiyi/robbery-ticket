@@ -203,10 +203,7 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
                 speedComment.setSpeedDynamicId(parentComment.getSpeedDynamicId());
             }
 
-            SpeedComment parentUpdateRecord = new SpeedComment();
-            parentUpdateRecord.setId(parentComment.getId());
-            parentUpdateRecord.setReplyNum(parentComment.getReplyNum() + 1);
-            speedCommentMapper.updateById(parentUpdateRecord);
+            speedCommentMapper.addReplyNum(parentComment.getId());
         }
 
         if (Objects.nonNull(speedCommentSaveParam.getSpeedDynamicId())) {
@@ -219,10 +216,7 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
             speedComment.setOwnerId(OwnerContextHelper.getOwnerId());
 
             // 动态评论数+1
-            SpeedDynamic dynamicUpdateRecord = new SpeedDynamic();
-            dynamicUpdateRecord.setId(speedDynamic.getId());
-            dynamicUpdateRecord.setCommentNum(speedDynamic.getCommentNum() + 1);
-            speedDynamicMapper.updateById(dynamicUpdateRecord);
+            speedDynamicMapper.addCommentNum(speedDynamic.getId());
         }
 
         speedCommentMapper.insert(speedComment);

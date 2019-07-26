@@ -2,8 +2,10 @@ package com.hj.tj.gohome;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hj.tj.gohome.entity.Owner;
+import com.hj.tj.gohome.entity.SpeedDynamic;
 import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.OwnerMapper;
+import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
