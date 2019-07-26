@@ -3,6 +3,7 @@ package com.hj.tj.gohome.vo.dynamic;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -27,6 +28,6 @@ public class SpeedDynamicSaveParam {
     /**
      * 地区id
      */
-    @NotEmpty(message = "地区id不能为空")
+    @NotNull(message = "地区id不能为空")
     private Integer speedAreaId;
 }

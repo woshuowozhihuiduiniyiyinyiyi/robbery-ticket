@@ -13,8 +13,12 @@ import javax.validation.constraints.NotNull;
 @Data
 public class SpeedDynamicParam {
 
-    @NotNull(message = "地区id不能为空")
     private Integer areaId;
+
+    /**
+     * 是否是我的动态
+     */
+    private Integer hasMy;
 
     private Page page = new Page();
 }

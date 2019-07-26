@@ -14,10 +14,8 @@ import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
 import com.hj.tj.gohome.service.OwnerService;
 import com.hj.tj.gohome.service.SpeedCommentService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
-import com.hj.tj.gohome.vo.comment.SpeedCommentParam;
-import com.hj.tj.gohome.vo.comment.SpeedCommentReplyResult;
-import com.hj.tj.gohome.vo.comment.SpeedCommentResult;
-import com.hj.tj.gohome.vo.comment.SpeedCommentSaveParam;
+import com.hj.tj.gohome.vo.comment.*;
+import com.hj.tj.gohome.vo.dynamic.SpeedDynamicReplyResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -98,6 +96,88 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
         return speedCommentSaveParam.getId();
     }
 
+    @Override
+    public PageInfo<SpeedCommentMyReplyResult> speedCommentMyReplyList(SpeedCommentMyReplyParam speedCommentMyReplyParam) {
+        QueryWrapper<SpeedComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("reply_owner_id", OwnerContextHelper.getOwnerId())
+                .eq("status", StatusEnum.UN_DELETE.getStatus());
+        PageHelper.startPage(speedCommentMyReplyParam.getPage().getPage(),
+                speedCommentMyReplyParam.getPage().getSize(),
+                "post_time desc");
+
+        List<SpeedComment> commentList = speedCommentMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(commentList)) {
+            return new PageInfo<>();
+        }
+
+        PageInfo<SpeedComment> commentPageInfo = new PageInfo<>(commentList);
+
+        Map<Integer, Owner> ownerMap = getOwnerMap(commentList);
+        Map<Integer, SpeedDynamic> dynamicMap = getDynamicMap(commentList);
+
+
+        List<SpeedCommentMyReplyResult> resultList = new ArrayList<>();
+        for (SpeedComment speedComment : commentList) {
+            SpeedCommentMyReplyResult speedCommentMyReplyResult = genMyReplyResult(speedComment, ownerMap, dynamicMap);
+            resultList.add(speedCommentMyReplyResult);
+        }
+
+        PageInfo<SpeedCommentMyReplyResult> resultPageInfo = new PageInfo<>();
+        BeanUtils.copyProperties(commentPageInfo, resultPageInfo);
+        resultPageInfo.setList(resultList);
+
+        return resultPageInfo;
+    }
+
+    private SpeedCommentMyReplyResult genMyReplyResult(SpeedComment speedComment,
+                                                       Map<Integer, Owner> ownerMap,
+                                                       Map<Integer, SpeedDynamic> dynamicMap) {
+        SpeedCommentMyReplyResult speedCommentMyReplyResult = new SpeedCommentMyReplyResult();
+        BeanUtils.copyProperties(speedComment, speedCommentMyReplyResult);
+
+        if (!StringUtils.isEmpty(speedComment.getPicture())) {
+            speedCommentMyReplyResult.setPictureList(Arrays.asList(speedComment.getPicture().split("`")));
+        }
+
+        Owner owner = ownerMap.get(speedComment.getOwnerId());
+        if (Objects.nonNull(owner)) {
+            speedCommentMyReplyResult.setAvatarUrl(owner.getAvatarUrl());
+            speedCommentMyReplyResult.setWxNickName(owner.getWxNickname());
+        }
+
+        SpeedDynamic speedDynamic = dynamicMap.get(speedComment.getSpeedDynamicId());
+        if (Objects.nonNull(speedDynamic)) {
+            SpeedDynamicReplyResult speedDynamicReplyResult = new SpeedDynamicReplyResult();
+            speedDynamicReplyResult.setContent(speedDynamic.getContent());
+            speedDynamicReplyResult.setId(speedComment.getId());
+            if (!StringUtils.isEmpty(speedDynamic.getPicture())) {
+                speedDynamicReplyResult.setPictureList(Arrays.asList(speedDynamic.getPicture().split("`")));
+            }
+
+            speedCommentMyReplyResult.setSpeedDynamicReplyResult(speedDynamicReplyResult);
+        }
+
+        return speedCommentMyReplyResult;
+    }
+
+    /**
+     * 获取动态Map
+     *
+     * @param commentList
+     * @return
+     */
+    private Map<Integer, SpeedDynamic> getDynamicMap(List<SpeedComment> commentList) {
+        List<Integer> dynamicIdList = commentList.stream().map(SpeedComment::getSpeedDynamicId).collect(Collectors.toList());
+        QueryWrapper<SpeedDynamic> dynamicQueryWrapper = new QueryWrapper<>();
+        dynamicQueryWrapper.in("id", dynamicIdList);
+        List<SpeedDynamic> speedDynamics = speedDynamicMapper.selectList(dynamicQueryWrapper);
+        if (CollectionUtils.isEmpty(speedDynamics)) {
+            return new HashMap<>();
+        }
+
+        return speedDynamics.stream().collect(Collectors.toMap(SpeedDynamic::getId, o -> o));
+    }
+
     private void insertSpeedComment(SpeedCommentSaveParam speedCommentSaveParam) {
         SpeedComment speedComment = new SpeedComment();
         speedComment.setUpdater(OwnerContextHelper.getOwnerId().toString());
@@ -136,6 +216,7 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
             }
             speedComment.setReplyOwnerId(speedDynamic.getOwnerId());
             speedComment.setSpeedDynamicId(speedCommentSaveParam.getSpeedDynamicId());
+            speedComment.setOwnerId(OwnerContextHelper.getOwnerId());
 
             // 动态评论数+1
             SpeedDynamic dynamicUpdateRecord = new SpeedDynamic();
@@ -244,12 +325,11 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
         List<Integer> replyOwnerIds = speedComments.stream().map(SpeedComment::getReplyOwnerId).collect(Collectors.toList());
         ownerIds.addAll(replyOwnerIds);
         List<Owner> owners = ownerService.selectByIds(ownerIds);
-        Map<Integer, Owner> ownerMap = new HashMap<>();
-        if (!CollectionUtils.isEmpty(owners)) {
-            ownerMap = owners.stream().collect(Collectors.toMap(Owner::getId, o -> o));
+        if (CollectionUtils.isEmpty(owners)) {
+            return new HashMap<>();
         }
 
-        return ownerMap;
+        return owners.stream().collect(Collectors.toMap(Owner::getId, o -> o));
     }
 
 }

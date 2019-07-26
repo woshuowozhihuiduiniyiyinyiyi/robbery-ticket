@@ -1,9 +1,7 @@
 package com.hj.tj.gohome.service;
 
 import com.github.pagehelper.PageInfo;
-import com.hj.tj.gohome.vo.comment.SpeedCommentParam;
-import com.hj.tj.gohome.vo.comment.SpeedCommentResult;
-import com.hj.tj.gohome.vo.comment.SpeedCommentSaveParam;
+import com.hj.tj.gohome.vo.comment.*;
 
 public interface SpeedCommentService {
 
@@ -22,4 +20,12 @@ public interface SpeedCommentService {
      * @return
      */
     Integer save(SpeedCommentSaveParam speedCommentSaveParam);
+
+    /**
+     * 我的信息列表
+     *
+     * @param speedCommentMyReplyParam
+     * @return
+     */
+    PageInfo<SpeedCommentMyReplyResult> speedCommentMyReplyList(SpeedCommentMyReplyParam speedCommentMyReplyParam);
 }

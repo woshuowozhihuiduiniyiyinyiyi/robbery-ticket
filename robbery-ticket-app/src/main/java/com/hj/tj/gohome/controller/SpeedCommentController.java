@@ -4,9 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.service.SpeedCommentService;
-import com.hj.tj.gohome.vo.comment.SpeedCommentParam;
-import com.hj.tj.gohome.vo.comment.SpeedCommentResult;
-import com.hj.tj.gohome.vo.comment.SpeedCommentSaveParam;
+import com.hj.tj.gohome.vo.comment.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,5 +36,11 @@ public class SpeedCommentController {
         }
 
         return ResponseEntity.ok(speedCommentService.save(speedCommentSaveParam));
+    }
+
+    @PostMapping("/auth/speed/comment/my/reply")
+    public ResponseEntity<PageInfo<SpeedCommentMyReplyResult>> speedCommentMyReplyList(@Validated @RequestBody SpeedCommentMyReplyParam speedCommentMyReplyParam){
+        PageInfo<SpeedCommentMyReplyResult> resultPageInfo = speedCommentService.speedCommentMyReplyList(speedCommentMyReplyParam);
+        return ResponseEntity.ok(resultPageInfo);
     }
 }

@@ -66,8 +66,13 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
     @Override
     public PageInfo<SpeedDynamicResult> listSpeedDynamic(SpeedDynamicParam speedDynamicParam) {
         QueryWrapper<SpeedDynamic> speedDynamicQueryWrapper = new QueryWrapper<>();
-        speedDynamicQueryWrapper.eq("speed_area_id", speedDynamicParam.getAreaId())
-                .eq("status", BaseStatusEnum.UN_DELETE.getValue());
+        if (Objects.nonNull(speedDynamicParam.getAreaId())) {
+            speedDynamicQueryWrapper.eq("speed_area_id", speedDynamicParam.getAreaId());
+        }
+        if (Objects.equals(speedDynamicParam.getHasMy(), 1)) {
+            speedDynamicQueryWrapper.eq("owner_id", OwnerContextHelper.getOwnerId());
+        }
+        speedDynamicQueryWrapper.eq("status", BaseStatusEnum.UN_DELETE.getValue());
 
         PageHelper.startPage(speedDynamicParam.getPage().getPage(), speedDynamicParam.getPage().getSize(),
                 "post_time desc");
