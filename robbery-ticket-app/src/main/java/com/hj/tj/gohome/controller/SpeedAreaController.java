@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2019/5/25 17:51
  */
 @RestController
-@RequestMapping("/api/auth/speed/area")
+@RequestMapping("/api/speed/area")
 public class SpeedAreaController {
 
     @Resource
