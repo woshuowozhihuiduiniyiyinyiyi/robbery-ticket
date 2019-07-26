@@ -5,12 +5,16 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.entity.Owner;
 import com.hj.tj.gohome.entity.SpeedDynamic;
+import com.hj.tj.gohome.entity.SpeedPraise;
 import com.hj.tj.gohome.enums.BaseStatusEnum;
 import com.hj.tj.gohome.enums.SpeedDynamicHasTopEnum;
+import com.hj.tj.gohome.enums.SpeedPraiseDataTypeEnum;
 import com.hj.tj.gohome.mapper.OwnerMapper;
 import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
+import com.hj.tj.gohome.mapper.SpeedPraiseMapper;
 import com.hj.tj.gohome.service.OwnerService;
 import com.hj.tj.gohome.service.SpeedDynamicService;
+import com.hj.tj.gohome.service.SpeedPraiseService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicDetailResult;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicParam;
@@ -36,6 +40,9 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
 
     @Resource
     private OwnerMapper ownerMapper;
+
+    @Resource
+    private SpeedPraiseService speedPraiseService;
 
     @Override
     public List<SpeedDynamicResult> listTopSpeedDynamic(Integer areaId) {
@@ -129,6 +136,50 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
         return speedDynamic.getId();
     }
 
+    @Override
+    public PageInfo<SpeedDynamicResult> loginDynamicList(SpeedDynamicParam speedDynamicParam) {
+        PageInfo<SpeedDynamicResult> speedDynamicResultPageInfo = this.listSpeedDynamic(speedDynamicParam);
+
+        List<SpeedDynamicResult> speedDynamicResults = speedDynamicResultPageInfo.getList();
+        if (CollectionUtils.isEmpty(speedDynamicResults)) {
+            return speedDynamicResultPageInfo;
+        }
+
+        List<Integer> dynamicIds = speedDynamicResults.stream().map(SpeedDynamicResult::getId).collect(Collectors.toList());
+        List<SpeedPraise> speedPraises = speedPraiseService.listByDataIdAndType(OwnerContextHelper.getOwnerId(), dynamicIds,
+                SpeedPraiseDataTypeEnum.DYNAMIC.getType());
+
+        if (CollectionUtils.isEmpty(speedPraises)) {
+            return speedDynamicResultPageInfo;
+        }
+
+        Map<Integer, SpeedPraise> speedPraiseMap = speedPraises.stream().collect(Collectors.toMap(SpeedPraise::getDataId, s -> s, (s1, s2) -> s1));
+        for (SpeedDynamicResult speedDynamicResult : speedDynamicResults) {
+            if (Objects.nonNull(speedPraiseMap.get(speedDynamicResult.getId()))) {
+                speedDynamicResult.setHasPraise(true);
+            }
+        }
+
+        return speedDynamicResultPageInfo;
+    }
+
+    @Override
+    public SpeedDynamicDetailResult loginFindById(Integer id) {
+        SpeedDynamicDetailResult speedDynamicDetailResult = this.findById(id);
+        if (Objects.isNull(speedDynamicDetailResult.getId())) {
+            return speedDynamicDetailResult;
+        }
+
+        List<SpeedPraise> speedPraises = speedPraiseService.listByDataIdAndType(OwnerContextHelper.getOwnerId(), Arrays.asList(id),
+                SpeedPraiseDataTypeEnum.DYNAMIC.getType());
+        if (!CollectionUtils.isEmpty(speedPraises)) {
+            speedDynamicDetailResult.setHasPraise(true);
+        }
+
+
+        return speedDynamicDetailResult;
+    }
+
     private SpeedDynamicDetailResult genSpeedDynamicDetailResult(SpeedDynamic speedDynamic, Owner owner) {
         SpeedDynamicDetailResult speedDynamicDetailResult = new SpeedDynamicDetailResult();
         BeanUtils.copyProperties(speedDynamic, speedDynamicDetailResult);
@@ -146,7 +197,8 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
         return speedDynamicDetailResult;
     }
 
-    private SpeedDynamicResult genSpeedDynamicResult(SpeedDynamic speedDynamic, Map<Integer, Owner> ownerMap) {
+    private SpeedDynamicResult genSpeedDynamicResult(SpeedDynamic speedDynamic,
+                                                     Map<Integer, Owner> ownerMap) {
         SpeedDynamicResult speedDynamicResult = new SpeedDynamicResult();
         BeanUtils.copyProperties(speedDynamic, speedDynamicResult);
 

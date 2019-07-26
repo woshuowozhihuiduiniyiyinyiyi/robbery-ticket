@@ -30,6 +30,16 @@ public class SpeedDynamicController {
         return ResponseEntity.ok(dynamicService.listSpeedDynamic(speedDynamicParam));
     }
 
+    @PostMapping("/auth/speed/dynamic/list")
+    public ResponseEntity<PageInfo<SpeedDynamicResult>> loginDynamicList(@Validated @RequestBody SpeedDynamicParam speedDynamicParam){
+        return ResponseEntity.ok(dynamicService.loginDynamicList(speedDynamicParam));
+    }
+
+    @GetMapping("/auth/speed/dynamic/detail/{id}")
+    public ResponseEntity<SpeedDynamicDetailResult> loginDynamicDetail(@PathVariable("id") Integer id){
+        return ResponseEntity.ok(dynamicService.loginFindById(id));
+    }
+
     @GetMapping("/speed/dynamic/detail/{id}")
     public ResponseEntity<SpeedDynamicDetailResult> dynamicDetail(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(dynamicService.findById(id));

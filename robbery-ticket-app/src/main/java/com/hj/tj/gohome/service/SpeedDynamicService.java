@@ -41,4 +41,20 @@ public interface SpeedDynamicService {
      * @return
      */
     Integer insert(SpeedDynamicSaveParam speedDynamicSaveParam);
+
+    /**
+     * 登录后动态列表
+     *
+     * @param speedDynamicParam
+     * @return
+     */
+    PageInfo<SpeedDynamicResult> loginDynamicList(SpeedDynamicParam speedDynamicParam);
+
+    /**
+     * 登录后详情
+     *
+     * @param id
+     * @return
+     */
+    SpeedDynamicDetailResult loginFindById(Integer id);
 }

@@ -13,6 +13,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class SpeedDynamicParam {
 
+    /**
+     * 地区id
+     */
     private Integer areaId;
 
     /**

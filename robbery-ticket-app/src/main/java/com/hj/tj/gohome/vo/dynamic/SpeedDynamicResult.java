@@ -54,4 +54,8 @@ public class SpeedDynamicResult {
      */
     private List<String> pictureList = new ArrayList<>();
 
+    /**
+     * 是否点赞
+     */
+    private Boolean hasPraise = false;
 }

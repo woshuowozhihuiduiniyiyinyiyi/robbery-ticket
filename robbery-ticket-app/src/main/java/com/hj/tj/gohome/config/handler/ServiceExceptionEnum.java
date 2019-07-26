@@ -47,6 +47,8 @@ public enum ServiceExceptionEnum {
 
     DYNAMIC_NOT_EXISTS(HttpStatus.FORBIDDEN, "评论的动态不存在"),
 
+    PRAISE_ALREADY_EXISTS(HttpStatus.FORBIDDEN, "您已经点过赞了"),
+
     ;
 
     /**
