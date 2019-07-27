@@ -31,6 +31,11 @@ public class SpeedPraise {
     private Integer ownerId;
 
     /**
+     * 被点赞人
+     */
+    private Integer praiseOwnerId;
+
+    /**
      * 点赞时间
      */
     private Date postTime;

@@ -1,6 +1,9 @@
 package com.hj.tj.gohome.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.service.SpeedPraiseService;
+import com.hj.tj.gohome.vo.praise.SpeedPraiseMeParam;
+import com.hj.tj.gohome.vo.praise.SpeedPraiseMeResult;
 import com.hj.tj.gohome.vo.praise.SpeedPraiseSaveParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,8 +22,12 @@ public class SpeedPraiseController {
     private SpeedPraiseService speedPraiseService;
 
     @PostMapping("/auth/speed/praise/save")
-    public ResponseEntity<Integer> speedPraiseSave(@Validated @RequestBody SpeedPraiseSaveParam speedPraiseSaveParam){
+    public ResponseEntity<Integer> speedPraiseSave(@Validated @RequestBody SpeedPraiseSaveParam speedPraiseSaveParam) {
         return ResponseEntity.ok(speedPraiseService.save(speedPraiseSaveParam));
     }
 
+    @PostMapping("/auth/speed/praise/list")
+    public ResponseEntity<PageInfo<SpeedPraiseMeResult>> speedPraiseMeList(@Validated @RequestBody SpeedPraiseMeParam speedPraiseMeParam) {
+        return ResponseEntity.ok(speedPraiseService.listPraiseMe(speedPraiseMeParam));
+    }
 }
