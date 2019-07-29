@@ -201,9 +201,9 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
                 }
 
                 speedComment.setSpeedDynamicId(parentComment.getSpeedDynamicId());
-            }
 
-            speedCommentMapper.addReplyNum(parentComment.getId());
+                speedCommentMapper.addReplyNum(parentComment.getId());
+            }
         }
 
         if (Objects.nonNull(speedCommentSaveParam.getSpeedDynamicId())) {
