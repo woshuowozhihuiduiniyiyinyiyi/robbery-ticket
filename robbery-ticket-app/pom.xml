@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>robbery-ticket-app</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.tj.robbery.ticket</groupId>
             <artifactId>robbery-ticket-dao</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
         </dependency>
 
         <!--阿里云OSS-->
