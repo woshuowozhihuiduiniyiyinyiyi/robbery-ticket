@@ -26,7 +26,7 @@ public class SpeedPraiseController {
         return ResponseEntity.ok(speedPraiseService.save(speedPraiseSaveParam));
     }
 
-    @PostMapping("/auth/speed/praise/list")
+    @PostMapping("/auth/speed/praise/me/list")
     public ResponseEntity<PageInfo<SpeedPraiseMeResult>> speedPraiseMeList(@Validated @RequestBody SpeedPraiseMeParam speedPraiseMeParam) {
         return ResponseEntity.ok(speedPraiseService.listPraiseMe(speedPraiseMeParam));
     }
