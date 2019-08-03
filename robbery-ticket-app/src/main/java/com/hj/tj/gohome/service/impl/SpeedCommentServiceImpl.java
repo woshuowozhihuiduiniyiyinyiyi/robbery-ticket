@@ -149,7 +149,7 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
         if (Objects.nonNull(speedDynamic)) {
             SpeedDynamicReplyResult speedDynamicReplyResult = new SpeedDynamicReplyResult();
             speedDynamicReplyResult.setContent(speedDynamic.getContent());
-            speedDynamicReplyResult.setId(speedComment.getId());
+            speedDynamicReplyResult.setId(speedDynamic.getId());
             if (!StringUtils.isEmpty(speedDynamic.getPicture())) {
                 speedDynamicReplyResult.setPictureList(Arrays.asList(speedDynamic.getPicture().split("`")));
             }
