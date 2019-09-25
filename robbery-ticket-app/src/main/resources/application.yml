@@ -30,6 +30,11 @@ spring:
   servlet:
     multipart:
       max-file-size: 1MB
+  datasource:
+    hikari:
+      idle-timeout: 10000
+      maximum-pool-size: 20
+      minimum-idle: 1
 
 server:
   servlet:
@@ -39,6 +44,7 @@ server:
     key-store: classpath:1614217_www.home931.top.pfx
     key-store-password: 0r8jLO79
     key-store-type: PKCS12
+
 
 ---
 #开发配置
