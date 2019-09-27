@@ -4,12 +4,12 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.hj.tj.gohome.config.WxMaConfiguration;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.config.jwt.TokenHelper;
 import com.hj.tj.gohome.consts.OwnerConstants;
 import com.hj.tj.gohome.entity.Owner;
-import com.hj.tj.gohome.entity.SpeedDynamic;
 import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.OwnerMapper;
 import com.hj.tj.gohome.service.OwnerService;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class OwnerServiceImpl implements OwnerService {
@@ -35,11 +34,13 @@ public class OwnerServiceImpl implements OwnerService {
     @Resource
     private TokenHelper tokenHelper;
 
-    @Resource
-    private WxMaService wxMaService;
-
     @Override
-    public WxLoginResObj login(WxLoginReqObj wxLoginReqObj) throws Exception {
+    public WxLoginResObj login(WxLoginReqObj wxLoginReqObj, String appId) throws Exception {
+        WxMaService wxMaService = WxMaConfiguration.getMaService(appId);
+        if (Objects.isNull(wxMaService)) {
+            throw new ServiceException(ServiceExceptionEnum.APP_ID_ERROR);
+        }
+
         WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(wxLoginReqObj.getCode());
 
         WxMaUserInfo userInfo = wxMaService.getUserService().getUserInfo(session.getSessionKey(),
@@ -73,7 +74,12 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public String refreshToken(String code) throws Exception {
+    public String refreshToken(String code, String appId) throws Exception {
+        WxMaService wxMaService = WxMaConfiguration.getMaService(appId);
+        if (Objects.isNull(wxMaService)) {
+            throw new ServiceException(ServiceExceptionEnum.APP_ID_ERROR);
+        }
+
         WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
 
         QueryWrapper<Owner> queryWrapper = new QueryWrapper<>();

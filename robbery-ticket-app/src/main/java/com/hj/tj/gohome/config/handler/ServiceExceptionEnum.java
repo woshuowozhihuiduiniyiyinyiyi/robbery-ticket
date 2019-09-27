@@ -49,6 +49,9 @@ public enum ServiceExceptionEnum {
 
     PRAISE_ALREADY_EXISTS(HttpStatus.FORBIDDEN, "您已经点过赞了"),
 
+    APP_ID_ERROR(HttpStatus.FORBIDDEN, "对应的appId 不存在"),
+
+    CONTENT_HAS_SEC(HttpStatus.FORBIDDEN, "上传内容包含敏感词"),
     ;
 
     /**

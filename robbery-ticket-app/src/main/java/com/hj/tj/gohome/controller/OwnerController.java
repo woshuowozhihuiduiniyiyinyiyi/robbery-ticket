@@ -19,22 +19,24 @@ public class OwnerController {
     @Resource
     private OwnerService ownerService;
 
-    @PostMapping("/owner/login")
-    public ResponseEntity login(@RequestBody WxLoginReqObj wxLoginReqObj) throws Exception {
-        WxLoginResObj wxLoginResObj = ownerService.login(wxLoginReqObj);
+    @PostMapping("/owner/login/{appId}")
+    public ResponseEntity login(@RequestBody WxLoginReqObj wxLoginReqObj,
+                                @NotBlank(message = "appid 不能为空") @PathVariable("appId") String appId) throws Exception {
+        WxLoginResObj wxLoginResObj = ownerService.login(wxLoginReqObj, appId);
 
         return ResponseEntity.ok(wxLoginResObj);
     }
 
-    @GetMapping("/owner/refresh/{code}")
-    public ResponseEntity refreshToken(@NotBlank(message = "微信code 不能为空") @PathVariable("code") String code) throws Exception {
-        String sid = ownerService.refreshToken(code);
+    @GetMapping("/owner/refresh/{appId}/{code}")
+    public ResponseEntity refreshToken(@NotBlank(message = "微信code 不能为空") @PathVariable("code") String code,
+                                       @NotBlank(message = "微信appid 不能为空") @PathVariable("appId") String appId) throws Exception{
+        String sid = ownerService.refreshToken(code, appId);
 
         return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, sid).build();
     }
 
     @GetMapping("/owner/create/tourist")
-    public ResponseEntity createTourist() throws Exception {
+    public ResponseEntity createTourist() {
         String sid = ownerService.createTourist();
 
         return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, sid).build();

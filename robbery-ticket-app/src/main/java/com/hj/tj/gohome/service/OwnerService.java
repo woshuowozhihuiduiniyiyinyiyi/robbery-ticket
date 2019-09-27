@@ -3,6 +3,7 @@ package com.hj.tj.gohome.service;
 import com.hj.tj.gohome.entity.Owner;
 import com.hj.tj.gohome.vo.login.WxLoginReqObj;
 import com.hj.tj.gohome.vo.login.WxLoginResObj;
+import me.chanjar.weixin.common.error.WxErrorException;
 
 import java.util.List;
 
@@ -14,24 +15,22 @@ public interface OwnerService {
      * @param wxLoginReqObj
      * @return
      */
-    WxLoginResObj login(WxLoginReqObj wxLoginReqObj) throws Exception;
+    WxLoginResObj login(WxLoginReqObj wxLoginReqObj, String appId) throws Exception;
 
     /**
      * 刷新token
      *
      * @param code 微信返回的code
      * @return
-     * @throws Exception
      */
-    String refreshToken(String code) throws Exception;
+    String refreshToken(String code, String appId) throws Exception;
 
     /**
      * 生成游客
      *
      * @return
-     * @throws Exception
      */
-    String createTourist() throws Exception;
+    String createTourist();
 
     /**
      * 根据id列表获取客户信息

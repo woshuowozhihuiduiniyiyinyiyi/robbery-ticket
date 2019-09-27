@@ -1,6 +1,10 @@
 package com.hj.tj.gohome.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.github.pagehelper.PageInfo;
+import com.hj.tj.gohome.config.WxMaConfiguration;
+import com.hj.tj.gohome.config.handler.ServiceException;
+import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.service.SpeedDynamicService;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicDetailResult;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicParam;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -31,12 +36,12 @@ public class SpeedDynamicController {
     }
 
     @PostMapping("/auth/speed/dynamic/list")
-    public ResponseEntity<PageInfo<SpeedDynamicResult>> loginDynamicList(@Validated @RequestBody SpeedDynamicParam speedDynamicParam){
+    public ResponseEntity<PageInfo<SpeedDynamicResult>> loginDynamicList(@Validated @RequestBody SpeedDynamicParam speedDynamicParam) {
         return ResponseEntity.ok(dynamicService.loginDynamicList(speedDynamicParam));
     }
 
     @GetMapping("/auth/speed/dynamic/detail/{id}")
-    public ResponseEntity<SpeedDynamicDetailResult> loginDynamicDetail(@PathVariable("id") Integer id){
+    public ResponseEntity<SpeedDynamicDetailResult> loginDynamicDetail(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(dynamicService.loginFindById(id));
     }
 
@@ -45,8 +50,15 @@ public class SpeedDynamicController {
         return ResponseEntity.ok(dynamicService.findById(id));
     }
 
-    @PostMapping("/auth/speed/dynamic/save")
-    public ResponseEntity dynamicSave(@Validated @RequestBody SpeedDynamicSaveParam speedDynamicSaveParam) {
+    @PostMapping("/auth/speed/dynamic/save/{appId}")
+    public ResponseEntity dynamicSave(@Validated @RequestBody SpeedDynamicSaveParam speedDynamicSaveParam,
+                                      @PathVariable("appId") String appId) {
+        WxMaService maService = WxMaConfiguration.getMaService(appId);
+        boolean hasSec = maService.getSecCheckService().checkMessage(speedDynamicSaveParam.getContent());
+        if (hasSec) {
+            throw new ServiceException(ServiceExceptionEnum.CONTENT_HAS_SEC);
+        }
+
         return ResponseEntity.ok(dynamicService.insert(speedDynamicSaveParam));
     }
 }
