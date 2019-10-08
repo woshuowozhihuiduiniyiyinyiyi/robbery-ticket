@@ -55,7 +55,7 @@ public class SpeedDynamicController {
                                       @PathVariable("appId") String appId) {
         WxMaService maService = WxMaConfiguration.getMaService(appId);
         boolean hasSec = maService.getSecCheckService().checkMessage(speedDynamicSaveParam.getContent());
-        if (hasSec) {
+        if (!hasSec) {
             throw new ServiceException(ServiceExceptionEnum.CONTENT_HAS_SEC);
         }
 

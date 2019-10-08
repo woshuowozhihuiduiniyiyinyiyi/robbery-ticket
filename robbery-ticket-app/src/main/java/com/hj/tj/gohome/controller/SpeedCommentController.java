@@ -7,6 +7,7 @@ import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.service.SpeedCommentService;
 import com.hj.tj.gohome.vo.comment.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
-@Validated
+@Slf4j
 public class SpeedCommentController {
 
     @Resource
@@ -31,8 +32,9 @@ public class SpeedCommentController {
     public ResponseEntity<Integer> speedCommentSave(@Validated @RequestBody SpeedCommentSaveParam speedCommentSaveParam,
                                                     @PathVariable("appId") String appId) {
         WxMaService maService = WxMaConfiguration.getMaService(appId);
+
         boolean hasSec = maService.getSecCheckService().checkMessage(speedCommentSaveParam.getContent());
-        if (hasSec) {
+        if (!hasSec) {
             throw new ServiceException(ServiceExceptionEnum.CONTENT_HAS_SEC);
         }
 
