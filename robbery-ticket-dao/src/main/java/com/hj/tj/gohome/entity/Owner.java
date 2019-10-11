@@ -18,6 +18,11 @@ public class Owner {
     private Integer id;
 
     /**
+     * 用户所属小程序appId
+     */
+    private String appId;
+
+    /**
      * 微信账号
      */
     private String wxAccount;
