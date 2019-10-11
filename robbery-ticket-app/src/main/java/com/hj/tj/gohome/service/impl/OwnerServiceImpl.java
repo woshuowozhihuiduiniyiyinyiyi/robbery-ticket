@@ -60,6 +60,7 @@ public class OwnerServiceImpl implements OwnerService {
 
             owner.setWxNickname(userInfo.getNickName());
             owner.setGender(Integer.parseInt(userInfo.getGender()));
+            owner.setAppId(appId);
             ownerMapper.insert(owner);
         }
 
