@@ -7,14 +7,10 @@ import lombok.Data;
 
 import java.util.Date;
 
-/**
- * @author tangj
- * @description
- * @since 2019/2/28 18:04
- */
-@TableName("station")
+@TableName("wx_form_id")
 @Data
-public class Station {
+public class WxFromId {
+
     /**
      * id
      */
@@ -22,14 +18,29 @@ public class Station {
     private Integer id;
 
     /**
-     * 列表编号
+     * 微信的appId
      */
-    private String number;
+    private String appId;
 
     /**
-     * 列车名称
+     * 微信formId
      */
-    private String name;
+    private String formId;
+
+    /**
+     * 业主Id
+     */
+    private Integer ownerId;
+
+    /**
+     * 是否已经使用
+     */
+    private Integer hasUse;
+
+    /**
+     * 过期时间
+     */
+    private Date expireDate;
 
     /**
      * 0已删除，1未删除

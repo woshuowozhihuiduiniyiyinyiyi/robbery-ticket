@@ -1,4 +1,4 @@
-#微信相关配置
+#微信相关配置，上面是老，下面是新
 wx:
   miniapp:
     configs:
@@ -21,7 +21,6 @@ auth:
   jwt:
     secret: ed92792d87d629d84cf589c5acfe257f
     expire: 2592000
-    header: 22f4830ec0a499683c117136444bb6b6
 
 oss:
   accessKeyId: LTAIvpJFVQqwqEzH
