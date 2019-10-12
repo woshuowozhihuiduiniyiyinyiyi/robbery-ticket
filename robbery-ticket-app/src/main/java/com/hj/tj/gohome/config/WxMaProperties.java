@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="https://github.com/binarywang">Binary Wang</a>
@@ -40,6 +41,11 @@ public class WxMaProperties {
          * 消息格式，XML或者JSON
          */
         private String msgDataFormat;
+
+        /**
+         * 消息模板map
+         */
+        private Map<String, String> msgTemplateMap;
     }
 
 }

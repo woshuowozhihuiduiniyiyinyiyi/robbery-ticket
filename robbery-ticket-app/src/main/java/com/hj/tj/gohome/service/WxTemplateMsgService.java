@@ -1,13 +1,29 @@
 package com.hj.tj.gohome.service;
 
+import com.hj.tj.gohome.entity.Order;
+
 import java.util.List;
 
 public interface WxTemplateMsgService {
 
     /**
-     * 发送加速留言模板消息
+     * 发送模板消息
      *
-     * @param keywordList 关键字列表
+     * @param keywordList
+     * @param formId
+     * @param toUserOpenId
+     * @param appId
+     * @param templateId
+     * @return
      */
-    void sendSpeedMsg(List<String> keywordList);
+    boolean sendMsg(List<String> keywordList, String formId, String toUserOpenId, String appId, String templateId, String page);
+
+
+    /**
+     * 发送有新订单通知
+     *
+     * @param order
+     * @return
+     */
+    boolean sendNewOrderMsg(Order order);
 }

@@ -62,6 +62,10 @@ public class OwnerServiceImpl implements OwnerService {
             owner.setGender(Integer.parseInt(userInfo.getGender()));
             owner.setAppId(appId);
             ownerMapper.insert(owner);
+        } else {
+            owner.setWxNickname(userInfo.getNickName());
+            owner.setGender(Integer.parseInt(userInfo.getGender()));
+            ownerMapper.updateById(owner);
         }
 
         WxLoginResObj wxLoginResObj = new WxLoginResObj();

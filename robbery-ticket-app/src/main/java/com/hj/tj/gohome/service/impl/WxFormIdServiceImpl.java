@@ -1,6 +1,6 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.hj.tj.gohome.entity.WxFromId;
+import com.hj.tj.gohome.entity.WxFormId;
 import com.hj.tj.gohome.enums.BaseStatusEnum;
 import com.hj.tj.gohome.enums.WxFormIdHasUseEnum;
 import com.hj.tj.gohome.mapper.WxFormIdMapper;
@@ -22,7 +22,7 @@ public class WxFormIdServiceImpl implements WxFormIdService {
 
     @Override
     public void wxFormIdSave(WxFormIdParam wxFormIdParam) {
-        WxFromId wxFromId = new WxFromId();
+        WxFormId wxFromId = new WxFormId();
         BeanUtils.copyProperties(wxFormIdParam, wxFromId);
 
         wxFromId.setCreatedAt(new Date());

@@ -52,6 +52,9 @@ public enum ServiceExceptionEnum {
     APP_ID_ERROR(HttpStatus.FORBIDDEN, "对应的appId 不存在"),
 
     CONTENT_HAS_SEC(HttpStatus.FORBIDDEN, "上传内容包含敏感词"),
+
+    ORDER_NOT_EXISTS(HttpStatus.FORBIDDEN, "定单不存在"),
+
     ;
 
     /**

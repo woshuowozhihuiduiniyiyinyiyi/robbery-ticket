@@ -14,3 +14,8 @@ CREATE TABLE `wx_form_id` (
   PRIMARY KEY (`id`)
 );
 
+-- 2.添加后台用户对应的业主id
+ALTER TABLE `owner`
+ADD COLUMN `portal_user_id`  int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '后台用户id，可以标记是哪个后台用户，然后进行消息通知' AFTER `phone`;
+
+

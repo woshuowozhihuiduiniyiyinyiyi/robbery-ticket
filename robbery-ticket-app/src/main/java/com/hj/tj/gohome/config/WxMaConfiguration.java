@@ -84,6 +84,7 @@ public class WxMaConfiguration {
                 .rule().async(false).content("文本").handler(textHandler).end()
                 .rule().async(false).content("图片").handler(picHandler).end()
                 .rule().async(false).content("二维码").handler(qrcodeHandler).end();
+
         return router;
     }
 

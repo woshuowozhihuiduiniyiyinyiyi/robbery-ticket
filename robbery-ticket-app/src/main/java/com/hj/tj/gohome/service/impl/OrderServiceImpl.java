@@ -7,6 +7,7 @@ import com.hj.tj.gohome.entity.*;
 import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.*;
 import com.hj.tj.gohome.service.OrderService;
+import com.hj.tj.gohome.service.WxTemplateMsgService;
 import com.hj.tj.gohome.utils.DateUtil;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
 import com.hj.tj.gohome.vo.order.OrderSaveParam;
@@ -37,6 +38,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderExpectDateQueryMapper orderExpectDateQueryMapper;
+
+    @Resource
+    private WxTemplateMsgService wxTemplateMsgService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -85,6 +89,8 @@ public class OrderServiceImpl implements OrderService {
         insertToOrderExpectDateQuery(order.getId(), expectDateIdList);
 
         saveRelPassengerOrder(order.getId(), orderSaveParam.getPassengerIdList());
+
+        wxTemplateMsgService.sendNewOrderMsg(order);
 
         return order.getId();
     }

@@ -62,6 +62,10 @@ public class Owner {
      */
     private String phone;
 
+    /**
+     * 后台用户id
+     */
+    private Integer portalUserId;
 
     /**
      * 状态,0未删除,1已删除

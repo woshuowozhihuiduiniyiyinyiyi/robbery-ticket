@@ -9,7 +9,7 @@ import java.util.Date;
 
 @TableName("wx_form_id")
 @Data
-public class WxFromId {
+public class WxFormId {
 
     /**
      * id
