@@ -13,6 +13,7 @@ import com.hj.tj.gohome.mapper.SpeedCommentMapper;
 import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
 import com.hj.tj.gohome.service.OwnerService;
 import com.hj.tj.gohome.service.SpeedCommentService;
+import com.hj.tj.gohome.service.WxTemplateMsgService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
 import com.hj.tj.gohome.vo.comment.*;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicReplyResult;
@@ -38,6 +39,9 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
 
     @Resource
     private SpeedDynamicMapper speedDynamicMapper;
+
+    @Resource
+    private WxTemplateMsgService wxTemplateMsgService;
 
     @Override
     public PageInfo<SpeedCommentResult> listSpeedComment(SpeedCommentParam speedCommentParam) {
@@ -203,6 +207,8 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
                 speedComment.setSpeedDynamicId(parentComment.getSpeedDynamicId());
 
                 speedCommentMapper.addReplyNum(parentComment.getId());
+
+                wxTemplateMsgService.addNewMsg(OwnerContextHelper.getOwnerId(), parentComment.getOwnerId());
             }
         }
 
@@ -217,9 +223,12 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
 
             // 动态评论数+1
             speedDynamicMapper.addCommentNum(speedDynamic.getId());
+
+            wxTemplateMsgService.addNewMsg(OwnerContextHelper.getOwnerId(), speedDynamic.getOwnerId());
         }
 
         speedCommentMapper.insert(speedComment);
+
 
         speedCommentSaveParam.setId(speedComment.getId());
     }

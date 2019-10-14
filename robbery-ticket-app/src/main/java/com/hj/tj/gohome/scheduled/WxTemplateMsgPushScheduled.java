@@ -2,6 +2,7 @@ package com.hj.tj.gohome.scheduled;
 
 import com.hj.tj.gohome.service.WxTemplateMsgService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Component
 @Slf4j
+@EnableScheduling
 public class WxTemplateMsgPushScheduled {
 
     @Resource

@@ -30,4 +30,9 @@ public class WxTemplateMsgServiceTest {
     public void testPushMsg() {
         wxTemplateMsgService.pushMsg();
     }
+
+    @Test
+    public void testAddNewMsg(){
+        wxTemplateMsgService.addNewMsg(224, 225);
+    }
 }

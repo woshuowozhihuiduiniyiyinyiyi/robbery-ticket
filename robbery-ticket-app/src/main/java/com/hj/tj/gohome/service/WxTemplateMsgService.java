@@ -33,4 +33,12 @@ public interface WxTemplateMsgService {
      * @return
      */
     Integer pushMsg();
+
+    /**
+     * 添加一条新的推送信息
+     *
+     * @param ownerId
+     * @param pushOwnerId
+     */
+    void addNewMsg(Integer ownerId, Integer pushOwnerId);
 }

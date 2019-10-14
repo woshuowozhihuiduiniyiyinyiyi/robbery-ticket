@@ -18,6 +18,7 @@ import com.hj.tj.gohome.mapper.WxFormIdMapper;
 import com.hj.tj.gohome.mapper.WxTemplateMsgMapper;
 import com.hj.tj.gohome.service.WxTemplateMsgService;
 import com.hj.tj.gohome.utils.DateUtil;
+import com.hj.tj.gohome.utils.OwnerContextHelper;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -203,6 +204,19 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         }
 
         return count;
+    }
+
+    @Override
+    public void addNewMsg(Integer ownerId, Integer pushOwnerId) {
+        WxTemplateMsg wxTemplateMsg = new WxTemplateMsg();
+        wxTemplateMsg.setHasPush(WxTemplateMsgHasPushEnum.NOT_PUSH.getValue());
+        wxTemplateMsg.setUpdatedAt(new Date());
+        wxTemplateMsg.setOwnerId(ownerId);
+        wxTemplateMsg.setPushOwnerId(pushOwnerId);
+        wxTemplateMsg.setCreator(OwnerContextHelper.getOwnerId().toString());
+        wxTemplateMsg.setUpdater(OwnerContextHelper.getOwnerId().toString());
+
+        wxTemplateMsgMapper.insert(wxTemplateMsg);
     }
 
     /**

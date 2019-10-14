@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
-import com.hj.tj.gohome.entity.Owner;
-import com.hj.tj.gohome.entity.SpeedComment;
-import com.hj.tj.gohome.entity.SpeedDynamic;
-import com.hj.tj.gohome.entity.SpeedPraise;
+import com.hj.tj.gohome.entity.*;
 import com.hj.tj.gohome.enums.SpeedPraiseDataTypeEnum;
 import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.SpeedCommentMapper;
@@ -16,6 +13,7 @@ import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
 import com.hj.tj.gohome.mapper.SpeedPraiseMapper;
 import com.hj.tj.gohome.service.OwnerService;
 import com.hj.tj.gohome.service.SpeedPraiseService;
+import com.hj.tj.gohome.service.WxTemplateMsgService;
 import com.hj.tj.gohome.utils.OwnerContextHelper;
 import com.hj.tj.gohome.vo.dynamic.SpeedDynamicReplyResult;
 import com.hj.tj.gohome.vo.praise.SpeedPraiseMeParam;
@@ -47,6 +45,9 @@ public class SpeedPraiseServiceImpl implements SpeedPraiseService {
     @Resource
     private OwnerService ownerService;
 
+    @Resource
+    private WxTemplateMsgService wxTemplateMsgService;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public Integer save(SpeedPraiseSaveParam speedPraiseSaveParam) {
@@ -70,11 +71,13 @@ public class SpeedPraiseServiceImpl implements SpeedPraiseService {
         if (Objects.equals(SpeedPraiseDataTypeEnum.DYNAMIC.getType(), speedPraiseSaveParam.getDataType())) {
             SpeedDynamic speedDynamic = speedDynamicMapper.selectById(speedPraiseSaveParam.getDataId());
             if (Objects.nonNull(speedDynamic)) {
+                wxTemplateMsgService.addNewMsg(OwnerContextHelper.getOwnerId(), speedDynamic.getOwnerId());
                 speedPraise.setPraiseOwnerId(speedPraise.getOwnerId());
             }
         } else {
             SpeedComment speedComment = speedCommentMapper.selectById(speedPraiseSaveParam.getDataId());
             if (Objects.nonNull(speedComment)) {
+                wxTemplateMsgService.addNewMsg(OwnerContextHelper.getOwnerId(), speedComment.getOwnerId());
                 speedPraise.setPraiseOwnerId(speedComment.getOwnerId());
             }
         }
