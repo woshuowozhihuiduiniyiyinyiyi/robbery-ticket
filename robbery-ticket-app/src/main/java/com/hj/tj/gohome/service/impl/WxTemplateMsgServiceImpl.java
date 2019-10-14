@@ -88,10 +88,9 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
         List<String> keywordList = new ArrayList<>();
         keywordList.add(owner.getWxNickname());
+        keywordList.add(DateUtil.DateToString(new Date()));
         keywordList.add("您有新的订单，用户Id:" + owner.getId() + ",用户微信昵称:" + owner.getWxNickname() +
                 ", 用户出发站:" + order.getOrigin() + ", 用户目的站:" + order.getDestination());
-        keywordList.add(DateUtil.DateToString(new Date()));
-        keywordList.add("已提交");
 
         List<Owner> portalOwners = ownerMapper.selectList(Wrappers.<Owner>query().lambda().gt(Owner::getPortalUserId, 0));
         if (CollectionUtils.isEmpty(portalOwners)) {
