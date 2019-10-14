@@ -49,8 +49,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     private static final String NEW_ORDER_TEMPLATE = "newOrder";
     private static final String SPEED_DYNAMIC_TEMPLATE = "speedDynamic";
 
-    @Override
-    public boolean sendMsg(List<String> keywordList,
+    private boolean sendMsg(List<String> keywordList,
                            String formId,
                            String toUserOpenId,
                            String appId,

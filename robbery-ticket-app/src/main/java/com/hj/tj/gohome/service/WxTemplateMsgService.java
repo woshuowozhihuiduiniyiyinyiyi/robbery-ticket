@@ -7,19 +7,6 @@ import java.util.List;
 public interface WxTemplateMsgService {
 
     /**
-     * 发送模板消息
-     *
-     * @param keywordList
-     * @param formId
-     * @param toUserOpenId
-     * @param appId
-     * @param templateId
-     * @return
-     */
-    boolean sendMsg(List<String> keywordList, String formId, String toUserOpenId, String appId, String templateId, String page);
-
-
-    /**
      * 发送有新订单通知
      *
      * @param order
