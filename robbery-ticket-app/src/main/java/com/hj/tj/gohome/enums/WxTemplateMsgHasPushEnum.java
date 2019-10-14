@@ -3,14 +3,14 @@ package com.hj.tj.gohome.enums;
 import lombok.Getter;
 
 @Getter
-public enum WxFormIdHasUseEnum {
+public enum WxTemplateMsgHasPushEnum {
 
-    NOT_USE(0, "未使用"), USED(1, "已使用");
+    NOT_PUSH(0, "未推送"), PUSHED(1, "已推送");
 
     private Integer value;
     private String description;
 
-    private WxFormIdHasUseEnum(Integer value, String description) {
+    private WxTemplateMsgHasPushEnum(Integer value, String description) {
         this.description = description;
         this.value = value;
     }

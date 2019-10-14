@@ -7,7 +7,7 @@ wx:
           token: e6170e0539b8bd0e429f4dc5d8fc5eff
           aesKey: Dx5LcP76CvL0JOE5jmqjNExAV2uAYIwhgbpv390itN7
           msgDataFormat: JSON
-          msgTemplateMap: {newOrder: ZXgF977wYY38BR0QElwuuklrjsn2RGOoAVbGHitNhaE}
+          msgTemplateMap: {newOrder: ZXgF977wYY38BR0QElwuuklrjsn2RGOoAVbGHitNhaE, speedDynamic: ZYnA6sQerh4k_t2rm4dhs1AetcOVrx5wQOe82EweFIw}
         - appid: wx03a315f53e328fdb
           secret: e8e054d7f0c230e1e6d24af78a0707a4
           token: e6170e0539b8bd0e429f4dc5d8fc5eff

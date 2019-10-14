@@ -25,4 +25,9 @@ public class WxTemplateMsgServiceTest {
 
         wxTemplateMsgService.sendNewOrderMsg(order);
     }
+
+    @Test
+    public void testPushMsg() {
+        wxTemplateMsgService.pushMsg();
+    }
 }

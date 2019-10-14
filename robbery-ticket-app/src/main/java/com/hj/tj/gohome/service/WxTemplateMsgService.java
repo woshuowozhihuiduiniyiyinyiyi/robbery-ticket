@@ -26,4 +26,11 @@ public interface WxTemplateMsgService {
      * @return
      */
     boolean sendNewOrderMsg(Order order);
+
+    /**
+     * 推送消息表里面待推送的消息
+     *
+     * @return
+     */
+    Integer pushMsg();
 }
