@@ -43,6 +43,9 @@ spring:
       idle-timeout: 10000
       maximum-pool-size: 20
       minimum-idle: 1
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
 
 
 server:
