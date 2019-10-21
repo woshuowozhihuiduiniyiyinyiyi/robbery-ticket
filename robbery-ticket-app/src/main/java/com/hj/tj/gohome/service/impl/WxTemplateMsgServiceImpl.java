@@ -187,7 +187,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             }
 
             WxFormId wxFormId = wxFormIds.get(0);
-            boolean sendSuccess = sendMsg(keywordList, wxFormId.getFormId(), pushOwner.getOpenId(), pushOwner.getAppId(), templateId, "pages/home/index");
+            boolean sendSuccess = sendMsg(keywordList, wxFormId.getFormId(), pushOwner.getOpenId(), pushOwner.getAppId(), templateId, "pages/message/index");
             if (sendSuccess) {
                 wxTemplateMsg.setHasPush(WxTemplateMsgHasPushEnum.PUSHED.getValue());
                 count += 1;
