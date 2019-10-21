@@ -1,12 +1,11 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.entity.Passenger;
 import com.hj.tj.gohome.entity.PassengerStudent;
 import com.hj.tj.gohome.entity.RelOwnerPassenger;
-import com.hj.tj.gohome.enums.BaseStatusEnum;
 import com.hj.tj.gohome.enums.IdCardTypeEnum;
 import com.hj.tj.gohome.enums.PassengerTypeEnum;
 import com.hj.tj.gohome.enums.StatusEnum;
@@ -99,9 +98,8 @@ public class PassengerServiceImpl implements PassengerService {
         passengerStudent.setPassengerId(passengerId);
         passengerStudent.setUpdater(OwnerContextHelper.getOwnerId().toString());
 
-        QueryWrapper<PassengerStudent> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("passenger_id", passengerStudent.getPassengerId());
-        passengerStudentMapper.update(passengerStudent, queryWrapper);
+        passengerStudentMapper.update(passengerStudent, Wrappers.<PassengerStudent>query().lambda()
+                .eq(PassengerStudent::getPassengerId, passengerStudent.getPassengerId()));
     }
 
     private void checkStudentInfo(PassengerStudentReqObj passengerStudentReqObj) {
@@ -142,20 +140,18 @@ public class PassengerServiceImpl implements PassengerService {
     public List<PassengerResObj> listPassenger() {
         Integer ownerId = OwnerContextHelper.getOwnerId();
 
-        QueryWrapper queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("owner_id", ownerId);
-        queryWrapper.eq("status", StatusEnum.UN_DELETE.getStatus());
-        List<RelOwnerPassenger> relOwnerPassengers = relOwnerPassengerMapper.selectList(queryWrapper);
+        List<RelOwnerPassenger> relOwnerPassengers = relOwnerPassengerMapper.selectList(Wrappers.<RelOwnerPassenger>query().lambda()
+                .eq(RelOwnerPassenger::getOwnerId, ownerId)
+                .eq(RelOwnerPassenger::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (CollectionUtils.isEmpty(relOwnerPassengers)) {
             return new ArrayList<>();
         }
 
         List<Integer> passengerIdList = relOwnerPassengers.stream().map(RelOwnerPassenger::getPassengerId).collect(Collectors.toList());
 
-        queryWrapper = new QueryWrapper();
-        queryWrapper.in("id", passengerIdList);
-        queryWrapper.eq("status", StatusEnum.UN_DELETE.getStatus());
-        List<Passenger> passengerList = passengerMapper.selectList(queryWrapper);
+        List<Passenger> passengerList = passengerMapper.selectList(Wrappers.<Passenger>query().lambda()
+                .in(Passenger::getId, passengerIdList)
+                .eq(Passenger::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (CollectionUtils.isEmpty(passengerList)) {
             return new ArrayList<>();
         }
@@ -191,9 +187,9 @@ public class PassengerServiceImpl implements PassengerService {
             return passengerDetailResObj;
         }
 
-        QueryWrapper<PassengerStudent> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("passenger_id", id).eq("status", BaseStatusEnum.UN_DELETE.getValue());
-        PassengerStudent passengerStudent = passengerStudentMapper.selectOne(queryWrapper);
+        PassengerStudent passengerStudent = passengerStudentMapper.selectOne(Wrappers.<PassengerStudent>query().lambda()
+                .eq(PassengerStudent::getPassengerId, id)
+                .eq(PassengerStudent::getStatus, StatusEnum.UN_DELETE.getStatus()));
 
         if (Objects.isNull(passengerStudent)) {
             return passengerDetailResObj;

@@ -1,6 +1,8 @@
 package com.hj.tj.gohome.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.entity.Owner;
@@ -9,6 +11,7 @@ import com.hj.tj.gohome.entity.SpeedPraise;
 import com.hj.tj.gohome.enums.BaseStatusEnum;
 import com.hj.tj.gohome.enums.SpeedDynamicHasTopEnum;
 import com.hj.tj.gohome.enums.SpeedPraiseDataTypeEnum;
+import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.OwnerMapper;
 import com.hj.tj.gohome.mapper.SpeedDynamicMapper;
 import com.hj.tj.gohome.mapper.SpeedPraiseMapper;
@@ -46,13 +49,11 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
 
     @Override
     public List<SpeedDynamicResult> listTopSpeedDynamic(Integer areaId) {
-        QueryWrapper<SpeedDynamic> speedDynamicQueryWrapper = new QueryWrapper<>();
-        speedDynamicQueryWrapper.eq("speed_area_id", areaId)
-                .eq("has_top", SpeedDynamicHasTopEnum.TOP.getValue())
-                .gt("top_expire", new Date())
-                .eq("status", BaseStatusEnum.UN_DELETE.getValue());
-
-        List<SpeedDynamic> speedDynamics = speedDynamicMapper.selectList(speedDynamicQueryWrapper);
+        List<SpeedDynamic> speedDynamics = speedDynamicMapper.selectList(Wrappers.<SpeedDynamic>query().lambda()
+                .eq(SpeedDynamic::getSpeedAreaId, areaId)
+                .eq(SpeedDynamic::getHasTop, SpeedDynamicHasTopEnum.TOP.getValue())
+                .gt(SpeedDynamic::getTopExpire, new Date())
+                .eq(SpeedDynamic::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (CollectionUtils.isEmpty(speedDynamics)) {
             return new ArrayList<>();
         }
@@ -72,17 +73,17 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
 
     @Override
     public PageInfo<SpeedDynamicResult> listSpeedDynamic(SpeedDynamicParam speedDynamicParam) {
-        QueryWrapper<SpeedDynamic> speedDynamicQueryWrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<SpeedDynamic> speedDynamicQueryWrapper = Wrappers.<SpeedDynamic>query().lambda();
         if (Objects.nonNull(speedDynamicParam.getAreaId())) {
-            speedDynamicQueryWrapper.eq("speed_area_id", speedDynamicParam.getAreaId());
+            speedDynamicQueryWrapper.eq(SpeedDynamic::getSpeedAreaId, speedDynamicParam.getAreaId());
         }
         if (Objects.equals(speedDynamicParam.getHasMy(), 1)) {
-            speedDynamicQueryWrapper.eq("owner_id", OwnerContextHelper.getOwnerId());
+            speedDynamicQueryWrapper.eq(SpeedDynamic::getOwnerId, OwnerContextHelper.getOwnerId());
         }
-        speedDynamicQueryWrapper.eq("status", BaseStatusEnum.UN_DELETE.getValue());
+        speedDynamicQueryWrapper.eq(SpeedDynamic::getStatus, BaseStatusEnum.UN_DELETE.getValue());
+        speedDynamicQueryWrapper.orderByDesc(SpeedDynamic::getPostTime);
 
-        PageHelper.startPage(speedDynamicParam.getPage().getPage(), speedDynamicParam.getPage().getSize(),
-                "post_time desc");
+        PageHelper.startPage(speedDynamicParam.getPage().getPage(), speedDynamicParam.getPage().getSize());
         List<SpeedDynamic> speedDynamics = speedDynamicMapper.selectList(speedDynamicQueryWrapper);
         if (CollectionUtils.isEmpty(speedDynamics)) {
             return new PageInfo<>();
@@ -170,7 +171,7 @@ public class SpeedDynamicServiceImpl implements SpeedDynamicService {
             return speedDynamicDetailResult;
         }
 
-        List<SpeedPraise> speedPraises = speedPraiseService.listByDataIdAndType(OwnerContextHelper.getOwnerId(), Arrays.asList(id),
+        List<SpeedPraise> speedPraises = speedPraiseService.listByDataIdAndType(OwnerContextHelper.getOwnerId(), Collections.singletonList(id),
                 SpeedPraiseDataTypeEnum.DYNAMIC.getType());
         if (!CollectionUtils.isEmpty(speedPraises)) {
             speedDynamicDetailResult.setHasPraise(true);

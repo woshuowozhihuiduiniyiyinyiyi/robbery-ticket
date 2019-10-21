@@ -1,6 +1,6 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.entity.*;
@@ -96,9 +96,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void limitSaveOrder(OrderSaveParam orderSaveParam) {
-        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
-        orderQueryWrapper.eq("owner_id", OwnerContextHelper.getOwnerId());
-        List<Order> orderList = orderMapper.selectList(orderQueryWrapper);
+        List<Order> orderList = orderMapper.selectList(Wrappers.<Order>query().lambda().eq(Order::getOwnerId, OwnerContextHelper.getOwnerId()));
         if (!CollectionUtils.isEmpty(orderList)) {
             for (Order order : orderList) {
                 if (Math.abs(order.getCreatedAt().getTime() - System.currentTimeMillis()) <= 10000) {
@@ -124,9 +122,6 @@ public class OrderServiceImpl implements OrderService {
      * @param expectDateQueryIdList 日期表id
      */
     private void insertToOrderExpectDateQuery(Integer orderId, List<Integer> expectDateQueryIdList) {
-        QueryWrapper<OrderExpectDateQuery> queryQueryWrapper = new QueryWrapper<>();
-        queryQueryWrapper.eq("order_id", orderId);
-
         for (Integer expectDateId : expectDateQueryIdList) {
             OrderExpectDateQuery insertRecord = new OrderExpectDateQuery();
             insertRecord.setStatus(StatusEnum.UN_DELETE.getStatus());
@@ -153,9 +148,8 @@ public class OrderServiceImpl implements OrderService {
             expectDateList.add(expectDate);
         }
 
-        QueryWrapper<ExpectDateQuery> expectDateQueryQueryWrapper = new QueryWrapper<>();
-        expectDateQueryQueryWrapper.in("expect_date", expectDateList);
-        List<ExpectDateQuery> expectDateQueryList = expectDateQueryMapper.selectList(expectDateQueryQueryWrapper);
+        List<ExpectDateQuery> expectDateQueryList = expectDateQueryMapper.selectList(Wrappers.<ExpectDateQuery>query().lambda()
+                .in(ExpectDateQuery::getExpectDate, expectDateList));
 
         Map<Date, ExpectDateQuery> expectDateQueryMap = expectDateQueryList.stream().collect(Collectors.toMap(ExpectDateQuery::getExpectDate, e -> e));
 
@@ -178,13 +172,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void saveRelPassengerOrder(Integer orderId, List<Integer> passengerIdList) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_id", orderId);
-
         RelPassengerOrder relPassengerOrder = new RelPassengerOrder();
         relPassengerOrder.setStatus(StatusEnum.DELETED.getStatus());
 
-        relPassengerOrderMapper.update(relPassengerOrder, queryWrapper);
+        relPassengerOrderMapper.update(relPassengerOrder, Wrappers.<RelPassengerOrder>query().lambda()
+                .eq(RelPassengerOrder::getOrderId, orderId));
 
         for (Integer passengerId : passengerIdList) {
             RelPassengerOrder tempRelPassengerOrder = new RelPassengerOrder();

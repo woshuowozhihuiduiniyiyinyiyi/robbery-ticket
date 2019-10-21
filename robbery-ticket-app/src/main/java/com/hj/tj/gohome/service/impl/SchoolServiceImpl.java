@@ -1,6 +1,6 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.hj.tj.gohome.entity.School;
 import com.hj.tj.gohome.mapper.SchoolMapper;
@@ -22,17 +22,15 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public List<SchoolResObj> listSchool(String name) {
-        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
-        queryWrapper.likeRight("school_name", name);
         PageHelper.startPage(1, 5);
 
-        List<School> schools = schoolMapper.selectList(queryWrapper);
+        List<School> schools = schoolMapper.selectList(Wrappers.<School>query().lambda().likeRight(School::getSchoolName, name));
         if (CollectionUtils.isEmpty(schools)) {
             return new ArrayList<>();
         }
 
         List<SchoolResObj> schoolResObjs = new ArrayList<>(schools.size());
-        for(School school: schools){
+        for (School school : schools) {
             SchoolResObj schoolResObj = new SchoolResObj();
             BeanUtils.copyProperties(school, schoolResObj);
             schoolResObjs.add(schoolResObj);

@@ -1,6 +1,6 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.config.handler.ServiceException;
@@ -45,14 +45,11 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
 
     @Override
     public PageInfo<SpeedCommentResult> listSpeedComment(SpeedCommentParam speedCommentParam) {
-        QueryWrapper<SpeedComment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("speed_dynamic_id", speedCommentParam.getSpeedDynamicId())
-                .eq("root_id", 0)
-                .eq("status", StatusEnum.UN_DELETE.getStatus());
-
-        PageHelper.startPage(speedCommentParam.getPage().getPage(), speedCommentParam.getPage().getSize(),
-                "post_time desc");
-        List<SpeedComment> commentList = speedCommentMapper.selectList(queryWrapper);
+        PageHelper.startPage(speedCommentParam.getPage().getPage(), speedCommentParam.getPage().getSize());
+        List<SpeedComment> commentList = speedCommentMapper.selectList(Wrappers.<SpeedComment>query().lambda()
+                .eq(SpeedComment::getSpeedDynamicId, speedCommentParam.getSpeedDynamicId())
+                .eq(SpeedComment::getRootId, 0)
+                .eq(SpeedComment::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (CollectionUtils.isEmpty(commentList)) {
             return new PageInfo<>();
         }
@@ -61,10 +58,9 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
 
         // 回复Map
         List<Integer> commentIds = commentList.stream().map(SpeedComment::getId).collect(Collectors.toList());
-        queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("root_id", commentIds)
-                .eq("status", StatusEnum.UN_DELETE.getStatus());
-        List<SpeedComment> replyList = speedCommentMapper.selectList(queryWrapper);
+        List<SpeedComment> replyList = speedCommentMapper.selectList(Wrappers.<SpeedComment>query().lambda()
+                .in(SpeedComment::getRootId, commentIds)
+                .eq(SpeedComment::getStatus, StatusEnum.UN_DELETE.getStatus()));
         Map<Integer, List<SpeedComment>> replyMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(replyList)) {
             replyMap = replyList.stream().collect(Collectors.groupingBy(SpeedComment::getRootId));
@@ -102,14 +98,13 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
 
     @Override
     public PageInfo<SpeedCommentMyReplyResult> speedCommentMyReplyList(SpeedCommentMyReplyParam speedCommentMyReplyParam) {
-        QueryWrapper<SpeedComment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("reply_owner_id", OwnerContextHelper.getOwnerId())
-                .eq("status", StatusEnum.UN_DELETE.getStatus());
         PageHelper.startPage(speedCommentMyReplyParam.getPage().getPage(),
-                speedCommentMyReplyParam.getPage().getSize(),
-                "post_time desc");
+                speedCommentMyReplyParam.getPage().getSize());
 
-        List<SpeedComment> commentList = speedCommentMapper.selectList(queryWrapper);
+        List<SpeedComment> commentList = speedCommentMapper.selectList(Wrappers.<SpeedComment>query().lambda()
+                .eq(SpeedComment::getReplyOwnerId, OwnerContextHelper.getOwnerId())
+                .eq(SpeedComment::getStatus, StatusEnum.UN_DELETE.getStatus())
+                .orderByDesc(SpeedComment::getPostTime));
         if (CollectionUtils.isEmpty(commentList)) {
             return new PageInfo<>();
         }
@@ -167,14 +162,13 @@ public class SpeedCommentServiceImpl implements SpeedCommentService {
     /**
      * 获取动态Map
      *
-     * @param commentList
-     * @return
+     * @param commentList 动态列表
+     * @return  动态Map
      */
     private Map<Integer, SpeedDynamic> getDynamicMap(List<SpeedComment> commentList) {
         List<Integer> dynamicIdList = commentList.stream().map(SpeedComment::getSpeedDynamicId).collect(Collectors.toList());
-        QueryWrapper<SpeedDynamic> dynamicQueryWrapper = new QueryWrapper<>();
-        dynamicQueryWrapper.in("id", dynamicIdList);
-        List<SpeedDynamic> speedDynamics = speedDynamicMapper.selectList(dynamicQueryWrapper);
+        List<SpeedDynamic> speedDynamics = speedDynamicMapper.selectList(Wrappers.<SpeedDynamic>query().lambda()
+                .in(SpeedDynamic::getId, dynamicIdList));
         if (CollectionUtils.isEmpty(speedDynamics)) {
             return new HashMap<>();
         }

@@ -3,7 +3,7 @@ package com.hj.tj.gohome.service.impl;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hj.tj.gohome.config.WxMaConfiguration;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
@@ -50,10 +50,9 @@ public class OwnerServiceImpl implements OwnerService {
             throw new ServiceException(ServiceExceptionEnum.WX_GET_USER_ERROR);
         }
 
-        QueryWrapper<Owner> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("open_id", userInfo.getOpenId());
-        queryWrapper.eq("status", StatusEnum.UN_DELETE.getStatus());
-        Owner owner = ownerMapper.selectOne(queryWrapper);
+        Owner owner = ownerMapper.selectOne(Wrappers.<Owner>query().lambda()
+                .eq(Owner::getOpenId, userInfo.getOpenId())
+                .eq(Owner::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (Objects.isNull(owner)) {
             owner = new Owner();
             BeanUtils.copyProperties(userInfo, owner);
@@ -87,9 +86,7 @@ public class OwnerServiceImpl implements OwnerService {
 
         WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
 
-        QueryWrapper<Owner> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("open_id", session.getOpenid());
-        Owner owner = ownerMapper.selectOne(queryWrapper);
+        Owner owner = ownerMapper.selectOne(Wrappers.<Owner>query().lambda().eq(Owner::getOpenId, session.getOpenid()));
         if (Objects.isNull(owner)) {
             throw new ServiceException(ServiceExceptionEnum.OWNER_NOT_EXISTS);
         }
@@ -112,8 +109,6 @@ public class OwnerServiceImpl implements OwnerService {
             return new ArrayList<>();
         }
 
-        QueryWrapper<Owner> ownerQueryWrapper = new QueryWrapper<>();
-        ownerQueryWrapper.in("id", ownerIds);
-        return ownerMapper.selectList(ownerQueryWrapper);
+        return ownerMapper.selectList(Wrappers.<Owner>query().lambda().in(Owner::getId, ownerIds));
     }
 }

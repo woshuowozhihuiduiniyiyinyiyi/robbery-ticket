@@ -1,6 +1,6 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hj.tj.gohome.config.handler.ServiceException;
@@ -51,12 +51,11 @@ public class SpeedPraiseServiceImpl implements SpeedPraiseService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public Integer save(SpeedPraiseSaveParam speedPraiseSaveParam) {
-        QueryWrapper<SpeedPraise> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("owner_id", OwnerContextHelper.getOwnerId())
-                .eq("data_id", speedPraiseSaveParam.getDataId())
-                .eq("data_type", speedPraiseSaveParam.getDataType())
-                .eq("status", StatusEnum.UN_DELETE.getStatus());
-        Integer count = speedPraiseMapper.selectCount(queryWrapper);
+        Integer count = speedPraiseMapper.selectCount(Wrappers.<SpeedPraise>query().lambda()
+                .eq(SpeedPraise::getOwnerId, OwnerContextHelper.getOwnerId())
+                .eq(SpeedPraise::getDataId, speedPraiseSaveParam.getDataId())
+                .eq(SpeedPraise::getDataType, speedPraiseSaveParam.getDataType())
+                .eq(SpeedPraise::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (count > 0) {
             throw new ServiceException(ServiceExceptionEnum.PRAISE_ALREADY_EXISTS);
         }
@@ -97,25 +96,22 @@ public class SpeedPraiseServiceImpl implements SpeedPraiseService {
 
     @Override
     public List<SpeedPraise> listByDataIdAndType(Integer ownerId, List<Integer> dataIds, Integer dataType) {
-        QueryWrapper<SpeedPraise> speedPraiseQueryWrapper = new QueryWrapper<>();
-        speedPraiseQueryWrapper.eq("owner_id", ownerId)
-                .in("data_id", dataIds)
-                .eq("data_type", dataType)
-                .eq("status", StatusEnum.UN_DELETE.getStatus());
-
-        return speedPraiseMapper.selectList(speedPraiseQueryWrapper);
+        return speedPraiseMapper.selectList(Wrappers.<SpeedPraise>query().lambda()
+                .eq(SpeedPraise::getOwnerId, ownerId)
+                .in(SpeedPraise::getDataId, dataIds)
+                .eq(SpeedPraise::getDataType, dataType)
+                .eq(SpeedPraise::getStatus, StatusEnum.UN_DELETE.getStatus()));
     }
 
     @Override
     public PageInfo<SpeedPraiseMeResult> listPraiseMe(SpeedPraiseMeParam speedPraiseMeParam) {
-        QueryWrapper<SpeedPraise> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("praise_owner_id", OwnerContextHelper.getOwnerId())
-                .eq("status", StatusEnum.UN_DELETE.getStatus())
-                .eq("data_type", SpeedPraiseDataTypeEnum.DYNAMIC.getType());
+        PageHelper.startPage(speedPraiseMeParam.getPage().getPage(), speedPraiseMeParam.getPage().getSize());
 
-        PageHelper.startPage(speedPraiseMeParam.getPage().getPage(), speedPraiseMeParam.getPage().getSize(), "post_time desc");
-
-        List<SpeedPraise> speedPraises = speedPraiseMapper.selectList(queryWrapper);
+        List<SpeedPraise> speedPraises = speedPraiseMapper.selectList(Wrappers.<SpeedPraise>query().lambda()
+                .eq(SpeedPraise::getPraiseOwnerId, OwnerContextHelper.getOwnerId())
+                .eq(SpeedPraise::getDataType, SpeedPraiseDataTypeEnum.DYNAMIC.getType())
+                .eq(SpeedPraise::getStatus, StatusEnum.UN_DELETE.getStatus())
+                .orderByDesc(SpeedPraise::getPostTime));
         if (CollectionUtils.isEmpty(speedPraises)) {
             return new PageInfo<>();
         }

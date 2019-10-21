@@ -1,8 +1,8 @@
 package com.hj.tj.gohome.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hj.tj.gohome.entity.SpeedArea;
-import com.hj.tj.gohome.enums.BaseStatusEnum;
+import com.hj.tj.gohome.enums.StatusEnum;
 import com.hj.tj.gohome.mapper.SpeedAreaMapper;
 import com.hj.tj.gohome.service.SpeedAreaService;
 import com.hj.tj.gohome.vo.area.SpeedAreaResult;
@@ -27,9 +27,8 @@ public class SpeedAreaServiceImpl implements SpeedAreaService {
 
     @Override
     public List<SpeedAreaResult> listSpeedArea() {
-        QueryWrapper<SpeedArea> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("status", BaseStatusEnum.UN_DELETE.getValue());
-        List<SpeedArea> speedAreas = speedAreaMapper.selectList(queryWrapper);
+        List<SpeedArea> speedAreas = speedAreaMapper.selectList(Wrappers.<SpeedArea>query().lambda()
+                .eq(SpeedArea::getStatus, StatusEnum.UN_DELETE.getStatus()));
         if (CollectionUtils.isEmpty(speedAreas)) {
             return new ArrayList<>();
         }
