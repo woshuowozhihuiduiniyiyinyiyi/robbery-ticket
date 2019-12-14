@@ -53,8 +53,8 @@ server:
     context-path: /gohomeapp
   port: 443
   ssl:
-    key-store: classpath:1614217_www.home931.top.pfx
-    key-store-password: 0r8jLO79
+    key-store: classpath:keystore.p12
+    key-store-password: 821075
     key-store-type: PKCS12
 
 
