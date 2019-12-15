@@ -6,6 +6,7 @@ import com.hj.tj.gohome.config.WxMaConfiguration;
 import com.hj.tj.gohome.config.handler.ServiceException;
 import com.hj.tj.gohome.config.handler.ServiceExceptionEnum;
 import com.hj.tj.gohome.service.SpeedCommentService;
+import com.hj.tj.gohome.utils.OwnerContextHelper;
 import com.hj.tj.gohome.vo.comment.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -22,6 +26,8 @@ public class SpeedCommentController {
 
     @Resource
     private SpeedCommentService speedCommentService;
+
+    private static final Map<Integer, Date> commentRepeatMap = new HashMap<>(512);
 
     @PostMapping("/speed/comment/list")
     public ResponseEntity<PageInfo<SpeedCommentResult>> speedCommentList(@Validated @RequestBody SpeedCommentParam speedCommentParam) {
@@ -42,6 +48,15 @@ public class SpeedCommentController {
                 && Objects.isNull(speedCommentSaveParam.getParentId())) {
             throw new ServiceException(ServiceExceptionEnum.SYS_ERROR);
         }
+
+        Date lastCommentTime = commentRepeatMap.get(OwnerContextHelper.getOwnerId());
+        if (Objects.nonNull(lastCommentTime)) {
+            long mis = new Date().getTime() - lastCommentTime.getTime();
+            if (mis < 5000L) {
+                throw new ServiceException(ServiceExceptionEnum.COMMENT_TOO_QUICKLY);
+            }
+        }
+        commentRepeatMap.put(OwnerContextHelper.getOwnerId(), new Date());
 
         return ResponseEntity.ok(speedCommentService.save(speedCommentSaveParam));
     }

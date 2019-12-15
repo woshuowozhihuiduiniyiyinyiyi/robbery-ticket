@@ -55,6 +55,8 @@ public enum ServiceExceptionEnum {
 
     ORDER_NOT_EXISTS(HttpStatus.FORBIDDEN, "定单不存在"),
 
+    COMMENT_TOO_QUICKLY(HttpStatus.FORBIDDEN, "请务在5秒内连续评论"),
+
     ;
 
     /**
@@ -67,7 +69,7 @@ public enum ServiceExceptionEnum {
      */
     private String message;
 
-    private ServiceExceptionEnum(HttpStatus status, String message) {
+    ServiceExceptionEnum(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
     }
