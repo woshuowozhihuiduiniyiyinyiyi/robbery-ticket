@@ -52,7 +52,7 @@ public class SpeedCommentController {
         Date lastCommentTime = commentRepeatMap.get(OwnerContextHelper.getOwnerId());
         if (Objects.nonNull(lastCommentTime)) {
             long mis = new Date().getTime() - lastCommentTime.getTime();
-            if (mis < 5000L) {
+            if (mis < 3000L) {
                 throw new ServiceException(ServiceExceptionEnum.COMMENT_TOO_QUICKLY);
             }
         }
