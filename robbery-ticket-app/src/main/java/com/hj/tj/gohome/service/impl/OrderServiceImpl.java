@@ -151,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
         List<ExpectDateQuery> expectDateQueryList = expectDateQueryMapper.selectList(Wrappers.<ExpectDateQuery>query().lambda()
                 .in(ExpectDateQuery::getExpectDate, expectDateList));
 
-        Map<Date, ExpectDateQuery> expectDateQueryMap = expectDateQueryList.stream().collect(Collectors.toMap(ExpectDateQuery::getExpectDate, e -> e));
+        Map<Date, ExpectDateQuery> expectDateQueryMap = expectDateQueryList.stream().collect(Collectors.toMap(ExpectDateQuery::getExpectDate, e -> e, (e1, e2) -> e1));
 
         List<Integer> expectDateQueryIdList = new ArrayList<>();
         for (Date expectDate : expectDateList) {

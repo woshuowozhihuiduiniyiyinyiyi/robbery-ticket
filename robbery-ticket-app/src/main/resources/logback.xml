@@ -1,136 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration debug="true">
-    <contextName>logback</contextName>
+    <property name="projectName" value="robbery_ticket" />
+    <property name="charset" value="UTF-8" />
+    <property name="loggingRoot" value="/usr/local/data/logs" />
+    <property name="log.pattern" value="%-20(%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread]) %-5level %logger{80} - %msg%n" />
+    <contextName>${projectName}</contextName>
 
-    <property name="ROOT" value="logs/" />
-    <property name="FILE_SIZE" value="50MB" />
-    <property name="MAX_HISTORY" value="100" />
-    <timestamp key="DATETIME" datePattern="yyyy-MM-dd HH:mm:ss" />
-
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>debug</level>
-        </filter>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n
-            </pattern>
+            <pattern>${log.pattern}</pattern>
+            <charset>${charset}</charset>
         </encoder>
     </appender>
 
-    <!-- ERROR 输入到文件，按日期和文件大小 -->
-    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder charset="utf-8">
-            <pattern>[%-5level] %d{${DATETIME}} [%thread] %logger{36} - %m%n
-            </pattern>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${loggingRoot}/${projectName}.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>${charset}</charset>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${ROOT}%d/error.%i.log</fileNamePattern>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${FILE_SIZE}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <fileNamePattern>${loggingRoot}/${projectName}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>5</maxHistory>
         </rollingPolicy>
-    </appender>
-
-    <!-- WARN 输入到文件，按日期和文件大小 -->
-    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder charset="utf-8">
-            <pattern>[%-5level] %d{${DATETIME}} [%thread] %logger{36} - %m%n
-            </pattern>
-        </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${ROOT}%d/warn.%i.log</fileNamePattern>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${FILE_SIZE}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-    </appender>
-
-    <!-- INFO 输入到文件，按日期和文件大小 -->
-    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder charset="utf-8">
-            <pattern>[%-5level] %d{${DATETIME}} [%thread] %logger{36} - %m%n
-            </pattern>
-        </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${ROOT}%d/info.%i.log</fileNamePattern>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${FILE_SIZE}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-    </appender>
-
-    <!-- DEBUG 输入到文件，按日期和文件大小 -->
-    <appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder charset="utf-8">
-            <pattern>[%-5level] %d{${DATETIME}} [%thread] %logger{36} - %m%n
-            </pattern>
-        </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
         </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${ROOT}%d/debug.%i.log</fileNamePattern>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${FILE_SIZE}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
     </appender>
 
-    <!-- TRACE 输入到文件，按日期和文件大小 -->
-    <appender name="TRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder charset="utf-8">
-            <pattern>[%-5level] %d{${DATETIME}} [%thread] %logger{36} - %m%n
-            </pattern>
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${loggingRoot}/${projectName}-error.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>${charset}</charset>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>TRACE</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <rollingPolicy
-                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${ROOT}%d/trace.%i.log</fileNamePattern>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${FILE_SIZE}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${loggingRoot}/${projectName}-error.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
     </appender>
+
+    <logger name="com.netflix" level="WARN" />
+
+    <springProfile name="dev">
+        <!-- show parameters for hibernate sql 专为 Hibernate 定制 -->
+        <logger name="org.springframework.scheduling"  level="error" />
+        <Logger name="org.springframework" level="info" />
+        <logger name="com.lzw" level="info" />
+        <logger name="org.mybatis" level="warn" />
+        <logger name="org.apache" level="ERROR" />
+        <logger name="org.hibernate" level="ERROR" />
+        <logger name="com.zaxxer.hikari" level="INFO" />
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ERROR"/>
+        </root>
+    </springProfile>
 
     <root level="debug">
-        <appender-ref ref="console" />
+        <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="org.springframework.scheduling"  level="error" />
-    <Logger name="org.springframework" level="info" />
-    <logger name="com.lzw" level="info" />
-    <logger name="org.mybatis" level="warn" />
-    <logger name="org.apache" level="ERROR" />
-    <logger name="org.hibernate" level="ERROR" />
-    <logger name="com.zaxxer.hikari" level="INFO" />
+    <springProfile name="test,prod">
+        <logger name="org.mybatis" level="warn" />
+        <logger name="org.apache" level="ERROR" />
+        <logger name="org.hibernate" level="ERROR" />
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ERROR"/>
+        </root>
+    </springProfile>
 
 </configuration>
